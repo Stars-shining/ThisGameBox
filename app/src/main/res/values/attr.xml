@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="customProgressBar">
+
+        <attr name="boxIcon" format="reference"/>
+        <attr name="boxPercentColor" format="color"/>
+        <attr name="boxPercentSize" format="dimension"/>
+        <attr name="boxShowPercent" format="boolean"/>
+    </declare-styleable>
+</resources>

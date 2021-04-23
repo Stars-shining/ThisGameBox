@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:fillViewport="true"
+        android:layout_marginBottom="80dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include
+            layout="@layout/xiangqing_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </ScrollView>
+
+        <RelativeLayout
+            android:background="@color/white"
+            android:id="@+id/btn_layout"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
+
+            <Button
+                android:layout_marginTop="10dp"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/game_download"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:background="@drawable/btn_shape"
+                android:text="下载"
+                android:textColor="@color/black"
+                android:visibility="visible"
+                app:backgroundTint="@color/btnBg" />
+
+            <com.shentu.gamebox.view.CustomProgress
+                android:layout_marginTop="10dp"
+                android:id="@+id/down_prograss"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:max="100"
+                android:progress="0"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_marginBottom="18dp"
+                android:layout_alignParentBottom="true"
+                android:visibility="invisible"
+                app:boxPercentColor="@color/black"
+                app:boxPercentSize="14sp"
+                app:boxShowPercent="true" />
+        </RelativeLayout>
+
+
+
+</RelativeLayout>

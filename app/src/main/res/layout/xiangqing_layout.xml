@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/video_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="12dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.shentu.gamebox.view.widget.VideoView
+            android:id="@+id/video_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true" />
+
+        <ImageView
+            android:id="@+id/detail_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:scaleType="fitXY" />
+
+        <ImageView
+            android:id="@+id/play_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/play"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/xq_itme_include"
+        layout="@layout/xiangqing_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/video_view_layout" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_below="@id/xq_itme_include"
+        android:background="#fff3f3f3" />
+
+    <include
+        android:id="@+id/include_xq_text"
+        layout="@layout/xiangqing_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/xq_itme_include"
+        android:layout_marginBottom="15dp" />
+
+    <View
+        android:id="@+id/line_grey"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:layout_below="@id/include_xq_text"
+        android:layout_marginTop="15dp"
+        android:background="#fff3f3f3" />
+
+
+    <!--    <include-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        android:id="@+id/include_game_tab"-->
+    <!--        layout="@layout/xiangqing_switch"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_below="@id/line_grey"/>-->
+
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/gamepg_tab"
+        style="@style/Base.Widget.Design.TabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/line_grey"
+        app:tabIndicator="@drawable/tab_indicator"/>
+
+    <FrameLayout
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:id="@+id/fragment_tab1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/gamepg_tab" />
+
+    <FrameLayout
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:id="@+id/fragment_tab2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/gamepg_tab" />
+
+    <FrameLayout
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginStart="12dp"
+        android:id="@+id/fragment_tab3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/gamepg_tab" />
+
+
+
+</RelativeLayout>

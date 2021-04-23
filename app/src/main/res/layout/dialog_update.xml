@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+
+    android:layout_width="310dp"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:background="@mipmap/new_version"
+        android:layout_width="match_parent"
+        android:layout_height="148dp"/>
+<!--    <TextView-->
+<!--        android:id="@+id/update_version"-->
+<!--        android:textSize="16sp"-->
+<!--        android:layout_marginStart="20dp"-->
+<!--        android:text="最新版本："-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"/>-->
+
+    <TextView
+        android:textSize="15sp"
+        android:layout_marginEnd="22dp"
+        android:layout_marginStart="17dp"
+        android:textColor="@color/grey_"
+        android:text="更新内容："
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="22dp"
+        android:id="@+id/update_content"
+        android:textSize="13sp"
+        android:layout_marginStart="17dp"
+        android:textColor="@color/grey"
+        android:text=""
+        android:layout_width="match_parent"
+        android:layout_height="88dp"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_marginStart="28dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_cancel"
+            android:id="@+id/cancel_btn"
+            android:gravity="center"
+            android:text="取消"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="34dp"
+            app:backgroundTint="@null"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:layout_width="115dp"
+            android:layout_height="36dp"/>
+
+        <Button
+            android:layout_marginStart="22dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_shape"
+            android:id="@+id/update_apk"
+            android:gravity="center"
+            android:padding="0dp"
+            android:text="立即更新"
+            android:layout_marginEnd="29dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="34dp"
+            app:backgroundTint="@null"
+            android:textColor="@color/grey_"
+            android:textSize="14sp"
+            android:layout_width="115dp"
+            android:layout_height="36dp"/>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>

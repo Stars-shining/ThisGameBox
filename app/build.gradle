@@ -1,0 +1,170 @@
+/*插件 应用和library 切换 com.android.library*/
+plugins {
+    id 'com.android.application'
+}
+
+/*
+*定义方法 返回类型任意（自动判断）
+*String 或 def String
+*gradle 支持groovy语言
+* java.io.* java.lang.* java.math.BigDecimal java.math.BigInteger
+*  java.net.* java.util.* groovy.lang.* groovy.util.*
+* gradle clean
+*gradle build
+* gradlew assembleDebug --stacktrace -info
+* gradlew assembleRelease
+* gradlew installRelease Release
+* gradlew uninstallRelease
+*
+*  --stacktrace -info
+* */
+
+
+//获取local.properties的内容
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+
+ def String computeVersionName() {
+    return "1.0.1"
+}
+def releaseTime(){
+    return new Date().format("yyyy-MM-dd",TimeZone.getTimeZone("UTC"))
+}
+
+android {
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    /*项目中编译的sdk版本*/
+    compileSdkVersion 29
+    /*sdk工具版本*/
+    buildToolsVersion "29.0.2"
+
+    defaultConfig {
+        /*母包包名*/
+        applicationId "com.shentu.gamebox"
+        /*支持最小sdk版本*/
+        minSdkVersion 21
+        /*目标sdk版本*/
+        targetSdkVersion 29
+        /*母包版本号*/
+        versionCode 1
+        /*母包版本名*/
+        versionName "1.0.1"
+        /*自动化测试*/
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        /*as默认创建的文件夹名字 可以自定义*/
+//        flavorDimensions "app"
+    }
+    /*风格维度 */
+    flavorDimensions "versionCode"
+    /*签名配置*/
+    signingConfigs {
+        myConfig {
+//            storeFile file(properties["keystore_storeFile"])
+//            storePassword properties["keystore_storePassword"]
+//            keyAlias properties["keystore_kwyAlias"]
+//            keyPassword properties["keystore_keyPassword"]
+
+            storeFile file("../mykeystore.jks")
+            storePassword "123456"
+            keyAlias "key0"
+            keyPassword "123456"
+        }
+    }
+    /*风格 维度 可以添加多个渠道名称*/
+    productFlavors {
+
+        agent{
+            applicationId "com.facebook.box"
+        }
+    }
+
+    /*构建类型 发布类型release 测试类型debug 本地类型local*/
+    buildTypes {
+        release {
+            buildConfigField "boolean","LOG_DEBUG","false"
+            minifyEnabled false //使能够缩小  即 启用混淆 默认为false
+            /*混淆文件 SDK\tools\proguard\proguard-android-optimize.txt 和 当前 moudle下的proguard-rules.pro*/
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            /*移除无用的资源文件*/
+//            shrinkResource true
+//            zipAlignEnable true
+            debuggable false
+            signingConfig signingConfigs.myConfig
+            android.applicationVariants.all {
+                variant ->
+                    variant.outputs.all {
+                        outputFileName = "${variant.productFlavors[0].name}.apk"
+                    }
+            }
+        }
+        debug {
+            buildConfigField "boolean","LOG_DEBUG","true"
+//            zipAlignEnabled true
+            debuggable true  //启动debug的buildtype
+            signingConfig signingConfigs.myConfig
+        }
+
+        custom {
+            minifyEnabled false
+        }
+
+    }
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    /*lint检查 避免lint检测到不符合条件 退出编译*/
+//    lintOptions {
+//        abortOnError false
+//    }
+
+}
+
+dependencies {
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "com.google.android.material:material:1.2.0"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.android.support:support-annotations:28.0.0'
+//    implementation 'org.jsoup:jsoup:1.13.1'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    //MultiDex分包方法
+    implementation'androidx.multidex:multidex:2.0.1'
+
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+
+
+    //Retrofit + rxjava
+    //网络请求retrofit
+    //网络请求retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    //rxjava
+    implementation 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava:2.9.0'
+    implementation 'com.google.android.material:material:1.2.0'
+    //解决rxjava内存泄漏
+    implementation 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.2'
+
+
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2'
+    implementation 'com.alibaba:fastjson:1.2.75'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    implementation 'org.greenrobot:eventbus:3.0.0'
+}

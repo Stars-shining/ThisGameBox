@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="grey_dark">#ff333333</color>
+    <color name="grey_">#333333</color>
+    <color name="grey">#666666</color>
+    <color name="open_text">#FC804A</color>
+    <color name="grey_lint">#ff999999</color>
+    <color name="progressColor">#FAD949</color>
+    <color name="btnBg">#fff8e049</color>
+    <color name="cashBtn">#FEF4EC</color>
+
+    <color name="cash_stroke">#fff49847</color>
+    <color name="giftBtn">#EBECF9</color>
+    <color name="gift_content_corlor">#626DD1</color>
+    <color name="gift_stroke">#696CD1</color>
+    <color name="iconBg">#fffdf0b6</color>
+    <color name="downBtn">#fff8e04a</color>
+    <color name="line">#cccccc</color>
+    <color name="transparent_background">#00FFFFFF</color>
+
+
+</resources>

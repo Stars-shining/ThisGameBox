@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--关闭https服务器监测-->
+    <base-config cleartextTrafficPermitted = "true"/>
+
+    <!--实际部署只开放自己的服务器地址-->
+    <!--只对本服务器xxx.xxx.xxx.xxx开放-->
+<!--    <domain-config cleartextTrafficPermitted = "true">-->
+<!--        <domain includeSubdomains = "true">xxx.xxx.xxx.xxx</domain>-->
+<!--    </domain-config>-->
+</network-security-config>

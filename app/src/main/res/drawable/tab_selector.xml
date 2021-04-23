@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--整个背景-->
+    <item >
+        <shape>
+            <solid android:color="@color/white"/>
+        </shape>
+
+    </item>
+    <!--底部圆角参数是固定的  在 魅族2手机失效-->
+    <item android:width="30dp"
+        android:height="3dp"
+        android:gravity="bottom|center_horizontal">
+        <shape>
+            <solid android:color="@color/btnBg"/>
+            <corners android:radius="3dp"/>
+        </shape>
+    </item>
+</layer-list>
