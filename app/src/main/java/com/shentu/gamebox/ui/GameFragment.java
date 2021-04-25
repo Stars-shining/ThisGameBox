@@ -589,12 +589,12 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                 break;
             /*返利*/
             case R.id.reback_btn:
-                showGiftHtml(1);
+                showGiftHtml(detialGameBean.getRebate_detail());
                 break;
             /*福利*/
             case R.id.gift_btn:
-                /*跳转到页面*/
-                showGiftHtml(0);
+
+                showGiftHtml(detialGameBean.getGift_detail());
                 break;
             case R.id.scan_more:
                 int lineHeight = game_content.getLineHeight();
@@ -635,23 +635,14 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
     }
 
-    private void showGiftHtml(int index) {
-        String html_detail = detialGameBean.getGift_detail();
-        String version_intro = detialGameBean.getVersion_intro();
-        String htmlDate;
-        if (index == 0) {
-            htmlDate = getHtmlDate(html_detail);
-        } else {
-            htmlDate = version_intro;
+    private void showGiftHtml(String htmlDate) {
+        if (!htmlDate.isEmpty()){
+
+            View view = LayoutInflater.from(mActivity).inflate(R.layout.activity_webview, null);
+            DialogUtils.showHtmlDialog(mActivity, view, htmlDate);
+        }else{
+            Toast.makeText(mActivity, "很抱歉，暂无内容！", Toast.LENGTH_SHORT).show();
         }
-//        Intent intent = new Intent(mActivity, WebViewActivity.class);
-//        Bundle bundle = new Bundle();
-//        bundle.putString("html", getHtmlDate(html_detail));
-//        bundle.putInt("index", index);
-//        intent.putExtras(bundle);
-//        startActivity(intent);
-        View view = LayoutInflater.from(mActivity).inflate(R.layout.activity_webview, null);
-        DialogUtils.showHtmlDialog(mActivity, view, htmlDate, index);
 
     }
 

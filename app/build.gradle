@@ -105,6 +105,10 @@ android {
         debug {
             buildConfigField "boolean","LOG_DEBUG","true"
 //            zipAlignEnabled true
+//            minifyEnabled true
+//            /*混淆文件 SDK\tools\proguard\proguard-android-optimize.txt 和 当前 moudle下的proguard-rules.pro*/
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+////
             debuggable true  //启动debug的buildtype
             signingConfig signingConfigs.myConfig
         }

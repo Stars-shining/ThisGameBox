@@ -73,21 +73,21 @@ public class DialogUtils {
 
     }
 
-    public static void showHtmlDialog(Context context, View view, String html, int index) {
+    public static void showHtmlDialog(Context context, View view, String html) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         WebView webView = view.findViewById(R.id.web_view);
-        TextView rebackText = view.findViewById(R.id.reback_text);
+//        TextView rebackText = view.findViewById(R.id.reback_text);
         ImageView close_dialog = view.findViewById(R.id.close_dialog);
-        if (index == 0) {
-            rebackText.setVisibility(View.GONE);
-            builder.setView(view);
+//        if (index == 0) {
+//            rebackText.setVisibility(View.GONE);
+//            builder.setView(view);
             webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
-
-        } else {
-            webView.setVisibility(View.GONE);
-            rebackText.setText(html);
+//
+//        } else {
+//            webView.setVisibility(View.GONE);
+//            rebackText.setText(html);
             builder.setView(view);
-        }
+//        }
 
         AlertDialog alertDialog = builder.create();
         alertDialog.setCanceledOnTouchOutside(true);

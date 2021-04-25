@@ -145,6 +145,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private long contentLength;
     private long downloadLength;
     private String agentVersion;
+
+    /*是否全部展开*/
+    private boolean isUnfold = false;
     //    private LinearLayout rec_layout_parent;
 
 
@@ -217,10 +220,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //        LogUtils.e(agentVersion+"1111111111111111111111");
         permission = new Permission(this);
 
-        //热门版本
-        requestRetrofit(hotType, agentCode);
-        //推荐游戏
-        requestRetrofit(recType, agentCode);
+        /*游戏列表*/
+        gamesInfo(recType, agentCode);
+
+
 
         /*查看更多*/
         mClick();
@@ -231,14 +234,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         CheckVersionCode(agentCode);
     }
 
+    private void gamesInfo(String type, String agent_code) {
+
+        hotList = new ArrayList<>();
+        recList = new ArrayList<>();
+
+        HashMap<String, Object> map = FieldMapUtils.getRequestBody(type, "", agent_code, Constant.GET_GAMES, "");
+        if (type.equals("2")){
+            //推荐游戏
+            requestRecGames(map);
+
+        }else{
+            //热门版本
+            requestHotGames(map);
+        }
+
+
+
+
+
+
+
+
+
+
+    }
 
     /*请求网络获取games数据*/
 
-    public void requestRetrofit(String type, String agent_code) {
+    public void requestHotGames(HashMap<String,Object> map) {
 //        RequestBody requestBody = getRequestBody();
-        hotList = new ArrayList<>();
-        recList = new ArrayList<>();
-        HashMap<String, Object> map = FieldMapUtils.getRequestBody(type, "", agent_code, Constant.GET_GAMES, "");
         RetrofitManager.getInstance().GameListInfo(new Observer<HttpResult<GameBean<HomeItem>>>() {
             @Override
             public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
@@ -249,11 +274,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             public void onNext(@io.reactivex.annotations.NonNull HttpResult<GameBean<HomeItem>> gameBeanHttpResult) {
                 //获取game数据
                 GameBean<HomeItem> data = gameBeanHttpResult.getData();
-                if (type.equals(hotType)) {
                     hotGameBeans = data.getList();
-                } else {
-                    recGameBeans = data.getList();
-                }
             }
 
             @Override
@@ -261,20 +282,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //                LogUtils.e(e.toString());
 //                ApiException apiException = (ApiException) e;
 //                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
-
             }
-
             @Override
             public void onComplete() {
-
-
                 /*首次加载显示3条*/
-                if (hotGameBeans != null && type.equals("1") && hotGameBeans.size() != 0) {
+                if (hotGameBeans != null && hotGameBeans.size() != 0) {
                     hot_txt.setText("热门版本");
-                    LogUtils.e(hotGameBeans.size()+"");
-
                     if (hotGameBeans.size() > 3 ) {
-                        if ( null != recGameBeans && recList.size() !=0){
+                        if (isUnfold){
                             hot_more.setVisibility(View.VISIBLE);
                             hotList.addAll(hotGameBeans.subList(0, 3));
                             /*填充recyclerview*/
@@ -282,13 +297,48 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         }else{
                             setRecyclerView(hot_recycle, hotGameBeans, HOTTYPE);
                         }
-                    } else {
+                    } else  {
 //                        hot_more.setVisibility(View.GONE);
                         setRecyclerView(hot_recycle, hotGameBeans, HOTTYPE);
                     }
                 }
 
-                if (recGameBeans != null && type.equals("2") && recGameBeans.size() != 0) {
+
+            }
+        }, map);
+
+
+    }
+    public void requestRecGames(HashMap<String,Object> map) {
+//        RequestBody requestBody = getRequestBody();
+        RetrofitManager.getInstance().GameListInfo(new Observer<HttpResult<GameBean<HomeItem>>>() {
+            @Override
+            public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+                mDisposable = d;
+            }
+
+            @Override
+            public void onNext(@io.reactivex.annotations.NonNull HttpResult<GameBean<HomeItem>> gameBeanHttpResult) {
+                //获取game数据
+                GameBean<HomeItem> data = gameBeanHttpResult.getData();
+                    recGameBeans = data.getList();
+                    if (null != recGameBeans&& recGameBeans.size() != 0){
+                        isUnfold = true;
+                    }else{
+                        isUnfold = false;
+                    }
+            }
+
+            @Override
+            public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+//                LogUtils.e(e.toString());
+//                ApiException apiException = (ApiException) e;
+//                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
+            }
+            @Override
+            public void onComplete() {
+                /*首次加载显示3条*/
+                if (recGameBeans != null  && recGameBeans.size() != 0) {
                     rec_txt.setText("推荐游戏");
                     if (recGameBeans.size() > 3 && hotGameBeans.size() != 0) {
                         recList.addAll(recGameBeans.subList(0, 3));
@@ -300,8 +350,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         setRecyclerView(rec_recycle, recGameBeans, RECTYPE);
                     }
                 }
+
+                /*热门游戏*/
+                gamesInfo(hotType, agentCode);
             }
         }, map);
+
+
     }
 
     /*横幅图片*/
@@ -491,13 +546,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
 
-//                    Window window = alertDialog.getWindow();
-//                    window.getDecorView().setPadding(0, 0, 0, 0);
-//                    WindowManager.LayoutParams lp = window.getAttributes();
-//                    float scale = MainActivity.this.getResources().getDisplayMetrics().density;
-//                    lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-//                    lp.width = (int) (208 * scale / 0.5f);
-//                    alertDialog.getWindow().setAttributes(lp);
 
 
                     updateBtn.setOnClickListener(new View.OnClickListener() {
@@ -665,6 +713,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         //setLayoutManager布局管理器 有多种布局可选择
         view.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
+        view.setHasFixedSize(true);
         view.setAdapter(gameAdapter);
         gameAdapter.addChildClickViewIds(R.id.firstpg_detial_btn);
         gameAdapter.setOnItemClickListener(new OnItemClickListener() {
@@ -695,10 +744,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 }
             }
         });
+        /*滑动不加载图片*/
         view.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                if (newState == recyclerView.SCROLL_STATE_IDLE) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     Glide.with(getApplication()).resumeRequests();
                 } else {
                     Glide.with(getApplication()).pauseRequests();
