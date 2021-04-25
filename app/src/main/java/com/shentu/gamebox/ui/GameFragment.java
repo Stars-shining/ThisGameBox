@@ -47,6 +47,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.shentu.gamebox.R;
@@ -123,7 +132,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private Handler mHandler;
     private int currentProgress;
     private Button btn_download;
-    private VideoView videoView;
+    private PlayerView videoView;
     private ImageView xq_game_img;
     private TextView xq_game_title;
     private TextView xq_game_rec;
@@ -156,6 +165,10 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private FrameLayout fragment_tab1;
     private FrameLayout fragment_tab2;
     private FrameLayout fragment_tab3;
+    private SimpleExoPlayer simpleExoPlayer;
+    private boolean playWhenReady = true;
+    private int currentWindow;
+    private long playbackPosition;
 
 
     @Override
@@ -232,6 +245,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             btn_download.setText("打开");
         }
 
+        simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(mActivity,new DefaultTrackSelector());
 
     }
 
@@ -240,13 +254,22 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 //                mActivity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 //            ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
 //        }
-        videoView.setVideoURI(Uri.parse(uri));
-        videoView.start();
+        videoView.setPlayer(simpleExoPlayer);
+        simpleExoPlayer.setPlayWhenReady(playWhenReady);
+        simpleExoPlayer.seekTo(currentWindow,playbackPosition);
 
-        mmediaController = new MmediaController(mActivity)
-                .setPlayerParent(video_view_layout)
-                .setPlayer(videoView)
-                .build();
+        Uri  video = Uri.parse(uri);
+        ExtractorMediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory("exoplayer-codelab"))
+                .createMediaSource(video);
+        simpleExoPlayer.prepare(mediaSource,true,false);
+
+//        videoView.setVideoURI(Uri.parse(uri));
+//        videoView.start();
+
+//        mmediaController = new MmediaController(mActivity)
+//                .setPlayerParent(video_view_layout)
+//                .setPlayer(videoView)
+//                .build();
 
         LogUtils.e("播放视频");
 
