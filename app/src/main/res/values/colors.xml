@@ -24,6 +24,7 @@
     <color name="downBtn">#fff8e04a</color>
     <color name="line">#cccccc</color>
     <color name="transparent_background">#00FFFFFF</color>
+    <color name="black_bg">#9E020202</color>
 
 
 </resources>

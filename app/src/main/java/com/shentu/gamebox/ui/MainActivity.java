@@ -272,14 +272,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 if (hotGameBeans != null && type.equals("1") && hotGameBeans.size() != 0) {
                     hot_txt.setText("热门版本");
                     LogUtils.e(hotGameBeans.size()+"");
+
                     if (hotGameBeans.size() > 3 ) {
-                        if ( null != recGameBeans && recGameBeans.size() !=0){
+                        if ( null != recGameBeans && recList.size() !=0){
                             hot_more.setVisibility(View.VISIBLE);
                             hotList.addAll(hotGameBeans.subList(0, 3));
                             /*填充recyclerview*/
                             setRecyclerView(hot_recycle, hotList, HOTTYPE);
                         }else{
-
                             setRecyclerView(hot_recycle, hotGameBeans, HOTTYPE);
                         }
                     } else {
