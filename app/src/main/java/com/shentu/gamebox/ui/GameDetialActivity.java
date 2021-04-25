@@ -1,5 +1,6 @@
 package com.shentu.gamebox.ui;
 
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -10,6 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 
@@ -24,6 +26,8 @@ import com.shentu.gamebox.utils.LogUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.Serializable;
+
+import cn.jzvd.Jzvd;
 
 
 public class GameDetialActivity extends BaseActivity implements View.OnClickListener {
@@ -89,6 +93,11 @@ public class GameDetialActivity extends BaseActivity implements View.OnClickList
         return R.layout.layout_gamedes;
     }
 
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+    }
 
     @Override
     public void onClick(View v) {
@@ -98,5 +107,20 @@ public class GameDetialActivity extends BaseActivity implements View.OnClickList
                 LogUtils.e("点击返回主页面");
                 break;
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Jzvd.releaseAllVideos();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (Jzvd.backPress()){
+            return;
+        }
+
+        super.onBackPressed();
     }
 }

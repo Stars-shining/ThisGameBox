@@ -17,7 +17,11 @@ import android.os.Environment;
 import android.os.Handler;
 import android.text.Html;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -50,12 +54,16 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.video.VideoListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.shentu.gamebox.R;
@@ -105,6 +113,9 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cn.jzvd.JZTextureView;
+import cn.jzvd.Jzvd;
+import cn.jzvd.JzvdStd;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -132,7 +143,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private Handler mHandler;
     private int currentProgress;
     private Button btn_download;
-    private PlayerView videoView;
+    private JzvdStd videoView;
     private ImageView xq_game_img;
     private TextView xq_game_title;
     private TextView xq_game_rec;
@@ -157,7 +168,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private myTabViewAdapter tabAdapter;
     private TabFragmentAdapter tabFragmentAdapter;
     private int maxline = 5;
-    private MmediaController mmediaController;
+//    private MmediaController mmediaController;
     private RelativeLayout video_view_layout;
     private ImageView play_img;
     private String url;
@@ -169,6 +180,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private boolean playWhenReady = true;
     private int currentWindow;
     private long playbackPosition;
+    private ImageView exo_fullscreen_button;
 
 
     @Override
@@ -184,8 +196,9 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         fragment_tab2 = view.findViewById(R.id.fragment_tab2);
         fragment_tab3 = view.findViewById(R.id.fragment_tab3);
         video_view_layout = view.findViewById(R.id.video_view_layout);
-        image_view = view.findViewById(R.id.detail_image_view);
-        play_img = view.findViewById(R.id.play_img);
+        exo_fullscreen_button = view.findViewById(R.id.exo_fullscreen_button);
+//        image_view = view.findViewById(R.id.detail_image_view);
+//        play_img = view.findViewById(R.id.play_img);
         down_prograss = view.findViewById(R.id.down_prograss);
         btn_download = view.findViewById(R.id.game_download);
         viewpager = view.findViewById(R.id.gamepg_viewpg);
@@ -245,46 +258,29 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             btn_download.setText("打开");
         }
 
-        simpleExoPlayer = ExoPlayerFactory.newSimpleInstance(mActivity,new DefaultTrackSelector());
+         simpleExoPlayer = new SimpleExoPlayer.Builder(mActivity).build();
 
     }
 
-    public void videoPlayer(String uri) {
-//        if (ContextCompat.checkSelfPermission(
-//                mActivity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(mActivity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-//        }
-        videoView.setPlayer(simpleExoPlayer);
-        simpleExoPlayer.setPlayWhenReady(playWhenReady);
-        simpleExoPlayer.seekTo(currentWindow,playbackPosition);
-
-        Uri  video = Uri.parse(uri);
-        ExtractorMediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory("exoplayer-codelab"))
-                .createMediaSource(video);
-        simpleExoPlayer.prepare(mediaSource,true,false);
-
-//        videoView.setVideoURI(Uri.parse(uri));
-//        videoView.start();
-
-//        mmediaController = new MmediaController(mActivity)
-//                .setPlayerParent(video_view_layout)
-//                .setPlayer(videoView)
-//                .build();
-
+    public void videoPlayer(String uri, String cover) {
+        videoView.setUp(uri,"", Jzvd.SCREEN_NORMAL);
+        JzvdStd.SAVE_PROGRESS = false;
+        Glide.with(mActivity).load(cover).into(videoView.posterImageView);
+        videoView.startVideo();
         LogUtils.e("播放视频");
+    }
 
-//        MediaController mediaController = new MediaController(mActivity);
-//        videoView.setMediaController(mediaController);
-//        mediaController.setMediaPlayer(videoView);
+    @Override
+    public void onPause() {
+        super.onPause();
+
     }
 
     @SuppressLint("NewApi")
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(@NotNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        boolean tag = mActivity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE ? false : true;
-        mmediaController.switchOrientation(tag);
-        mActivity.fullScreen(!tag ? true : false);
+
     }
 
 
@@ -378,21 +374,21 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                         }
                     });
                     if (!videoUri.isEmpty()) {
-                        play_img.setVisibility(View.VISIBLE);
-                        Glide.with(mActivity).load(cover).apply(override).into(image_view);
-                        play_img.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                videoPlayer(videoUri);
-                                image_view.setVisibility(View.GONE);
-                                play_img.setVisibility(View.GONE);
-                            }
-                        });
+//                        play_img.setVisibility(View.VISIBLE);
+//                        Glide.with(mActivity).load(cover).apply(override).into(image_view);
+//                        play_img.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//
+                                videoPlayer(videoUri,cover);
+//                                image_view.setVisibility(View.GONE);
+//                                play_img.setVisibility(View.GONE);
+//                            }
+//                        });
                     } else {
 
                         imgsList = JSONArray.parseArray(beanImgs, String.class);
-                        image_view.setVisibility(View.VISIBLE);
+//                        image_view.setVisibility(View.VISIBLE);
                         videoView.setVisibility(View.GONE);
                         LogUtils.e(cover);
                         if (cover.isEmpty() && imgsList.size() != 0) {
@@ -905,7 +901,12 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        /*解注册*/
         EventBus.getDefault().unregister(this);
+        /*Rxjava解除订阅*/
         mDisposable.dispose();
+        /*释放播放器*/
+        simpleExoPlayer.release();
     }
 }

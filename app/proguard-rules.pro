@@ -225,7 +225,15 @@
 -keep class com.shentu.gamebox.bean.*{*;}       #自定义bean目录
 
 
+#播放器
+-keep public class cn.jzvd.JZMediaSystem {*; }
+#-keep public class cn.jzvd.demo.CustomMedia.CustomMedia {*; }
+#-keep public class cn.jzvd.demo.CustomMedia.JZMediaIjk {*; }
+#-keep public class cn.jzvd.demo.CustomMedia.JZMediaSystemAssertFolder {*; }
 
+#-keep class tv.danmaku.ijk.media.player.** {*; }
+-dontwarn tv.danmaku.ijk.media.player.*
+#-keep interface tv.danmaku.ijk.media.player.** { *; }
 ##recyclerview-animators
 #-keep class jp.wasabeef.** {*;}
 #-dontwarn jp.wasabeef.*

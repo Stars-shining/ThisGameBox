@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.media.Image;
+import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,8 +14,16 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.ui.PlayerControlView;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.shentu.gamebox.R;
 
 public class DialogUtils {
@@ -116,6 +125,40 @@ public class DialogUtils {
 //            }
 //        });
         close_dialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
+
+    }
+
+    public static void videoDialog(Context context, Uri video){
+        VideoView videoView = new VideoView(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog alertDialog = builder.create();
+        videoView.setVideoURI(video);
+
+
+
+
+//        DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context, Util.getUserAgent(context, "myExoPlayer"));
+//        ProgressiveMediaSource mediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(video);
+//        simpleExoPlayer.prepare(mediaSource,true,false);
+
+        Window window = alertDialog.getWindow();
+        window.setBackgroundDrawableResource(android.R.color.transparent);
+        window.getDecorView().setPadding(0, 0, 0, 0);
+        window.setGravity(Gravity.CENTER);
+        WindowManager.LayoutParams lp = window.getAttributes();
+       lp.x = 100;
+       lp.y = 100;
+       lp.height = 200;
+       lp.width = 200;
+        window.setAttributes(lp);
+        alertDialog.show();
+        videoView.start();
+        videoView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();

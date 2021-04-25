@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/video_view_layout"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="200dp"
         android:layout_marginStart="12dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="12dp"
@@ -17,29 +17,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.exoplayer2.ui.PlayerView
+        <cn.jzvd.JzvdStd
             android:id="@+id/video_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:controller_layout_id="@layout/simple_player_view"/>
+            android:layout_height="match_parent" />
 
-        <ImageView
-            android:id="@+id/detail_image_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:scaleType="fitXY" />
+<!--        <ImageView-->
+<!--            android:id="@+id/detail_image_view"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_alignParentStart="true"-->
+<!--            android:layout_alignParentTop="true"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:scaleType="fitXY" />-->
 
-        <ImageView
-            android:id="@+id/play_img"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@mipmap/play"
-            android:visibility="gone" />
+<!--        <ImageView-->
+<!--            android:id="@+id/play_img"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerInParent="true"-->
+<!--            android:src="@mipmap/play"-->
+<!--            android:visibility="gone" />-->
     </RelativeLayout>
 
     <include
