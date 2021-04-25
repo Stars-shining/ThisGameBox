@@ -137,7 +137,7 @@ public class MVideoController extends RelativeLayout implements View.OnClickList
         mDuration = mVideoView.getDuration();
     }
 
-    public void setCurrenTime(int current_time,int buffer_time){
+    public void setCurrentTime(int current_time,int buffer_time){
         mCurrent = current_time;
         mBuffer = buffer_time;
 
