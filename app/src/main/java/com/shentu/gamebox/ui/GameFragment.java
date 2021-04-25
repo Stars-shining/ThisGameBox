@@ -231,6 +231,8 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         if (null != pkName && !pkName.isEmpty()) {
             btn_download.setText("打开");
         }
+
+
     }
 
     public void videoPlayer(String uri) {
