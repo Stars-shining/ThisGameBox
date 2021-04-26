@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Environment;
 
 import androidx.annotation.Keep;
 import androidx.annotation.StringRes;
@@ -12,8 +13,16 @@ import androidx.core.content.res.ResourcesCompat;
 import com.shentu.gamebox.R;
 import com.shentu.gamebox.base.BaseActivity;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.UUID;
 
 @Keep
 public class Constant {
@@ -34,7 +43,8 @@ public class Constant {
     public static String GET_BANNER = "game_box/api/get_banner";
     public static String DOWN_LOAD = "game_box/api/download";
     public static String CHECK_VERSION = "game_box/api/check_version";
-
+    /*uuid。txt 文件*/
+    String fileName = "UUID.txt";
     /*代理code*/
 
     public static String GAME_ID = "8";
@@ -74,5 +84,63 @@ public class Constant {
         assert applicationInfo != null;
         return applicationInfo.metaData.getInt("");
     }
+    public static String getUUID() {
+        return UUID.randomUUID().toString().replaceAll("-","");
+    }
 
+    public  void saveUniqueID()  {
+        /*获取内部储存状态*/
+        String state = Environment.getExternalStorageState();
+        /*如果不是mounted 不可续写*/
+        if (state.equals(Environment.MEDIA_MOUNTED));{
+            String absolutePath = mContext.getExternalFilesDir("CaChe").getAbsolutePath();
+            File uidFile = new File(absolutePath,fileName);
+            if (!uidFile.exists()){
+                try {
+                    uidFile.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            //保存uuid
+            try {
+                FileWriter fw = new FileWriter(uidFile);
+                fw.write(getUUID());
+                fw.flush();
+                fw.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public  String readUUId(){
+        BufferedReader bf = null;
+        StringBuffer buffer = null;
+        try {
+            String absolutePath = mContext.getExternalFilesDir("CaChe").getAbsolutePath();
+            File uidFile = new File(absolutePath,fileName);
+            FileReader fileReader = new FileReader(uidFile);
+             buffer = new StringBuffer();
+             bf = new BufferedReader(fileReader);
+            String line;
+            while ((line = bf.readLine() )!= null){
+                buffer.append(line);
+            }
+           
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bf != null){
+                try {
+                    bf.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        assert buffer != null;
+        return buffer.toString();
+    }
 }

@@ -2,7 +2,7 @@
 plugins {
     id 'com.android.application'
 }
-
+apply plugin: 'org.greenrobot.greendao'
 /*
 *定义方法 返回类型任意（自动判断）
 *String 或 def String
@@ -110,6 +110,7 @@ android {
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 ////
             debuggable true  //启动debug的buildtype
+            resValue("string","PORT_NUMBER","8081")
             signingConfig signingConfigs.myConfig
         }
 
@@ -123,6 +124,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    greendao {
+        schemaVersion 1
+        daoPackage 'com.shentu.gamebox.greendao'
+        targetGenDir 'src/main/java'
     }
 
     /*lint检查 避免lint检测到不符合条件 退出编译*/
@@ -140,6 +147,8 @@ dependencies {
     implementation "com.google.android.material:material:1.2.0"
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'org.greenrobot:greendao:3.3.0'
+    implementation 'org.greenrobot:greendao-generator:3.3.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -171,4 +180,6 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.0.0'
 
     implementation 'cn.jzvd:jiaozivideoplayer:7.5.0'
+    /*在线查看数据库框架*/
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
 }

@@ -1,6 +1,7 @@
 package com.shentu.gamebox.ui;
 
 import android.app.AlertDialog;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
@@ -35,6 +36,7 @@ import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.shentu.gamebox.R;
 import com.shentu.gamebox.adapter.GameItemAdapter;
+import com.shentu.gamebox.base.BaseApplication;
 import com.shentu.gamebox.bean.AssistantBean;
 import com.shentu.gamebox.bean.BannerBean;
 import com.shentu.gamebox.bean.GameBean;
@@ -42,6 +44,10 @@ import com.shentu.gamebox.bean.HomeItem;
 import com.shentu.gamebox.bean.HttpResult;
 import com.shentu.gamebox.bean.RecGameBean;
 import com.shentu.gamebox.bean.VersionBean;
+import com.shentu.gamebox.greendao.DaoMaster;
+import com.shentu.gamebox.greendao.DaoSession;
+import com.shentu.gamebox.greendao.GameData;
+import com.shentu.gamebox.greendao.GameDataDao;
 import com.shentu.gamebox.http.ApiException;
 import com.shentu.gamebox.http.RetrofitManager;
 import com.shentu.gamebox.base.BaseActivity;
@@ -197,9 +203,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //        firstpg_start = findViewById(R.id.firstpg_open);
         firstpg_min = findViewById(R.id.head_img);
 
-
-
-
         assistant = findViewById(R.id.assistant);
 
         hot_more.setOnClickListener(this);
@@ -209,21 +212,36 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     }
 
-    @Keep
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void initData() {
+        BaseApplication application = (BaseApplication)getApplication();
 
         Constant constant = new Constant(this);
         agentCode = constant.getAgentCode();
-//        agentVersion = constant.getMetaDateFromApp();
-//        LogUtils.e(agentVersion+"1111111111111111111111");
+        /*保存设备标识*/
+        constant.saveUniqueID();
+        /*activity开启时间*/
+        Constant.getCurrentTime();
+        /*标识符*/
+        constant.readUUId();
+
+        DaoSession daoSession = application.getDaoSession();
+        GameData gameData = new GameData();
+        gameData.setAgent_code(agentCode);
+        gameData.setCurrentTiem(Constant.getCurrentTime());
+        gameData.setUUID(constant.readUUId());
+
+        GameDataDao gameDataDao = daoSession.getGameDataDao();
+        gameDataDao.insert(gameData);
+
+
+
         permission = new Permission(this);
 
         /*游戏列表*/
         gamesInfo(recType, agentCode);
-
-
 
         /*查看更多*/
         mClick();
@@ -233,6 +251,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         /*版本检测*/
         CheckVersionCode(agentCode);
     }
+
+
 
     private void gamesInfo(String type, String agent_code) {
 
