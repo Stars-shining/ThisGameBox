@@ -22,23 +22,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-<!--        <ImageView-->
-<!--            android:id="@+id/detail_image_view"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_alignParentStart="true"-->
-<!--            android:layout_alignParentTop="true"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_alignParentBottom="true"-->
-<!--            android:scaleType="fitXY" />-->
+        <ImageView
+            android:id="@+id/detail_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:scaleType="fitXY" />
 
-<!--        <ImageView-->
-<!--            android:id="@+id/play_img"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_centerInParent="true"-->
-<!--            android:src="@mipmap/play"-->
-<!--            android:visibility="gone" />-->
     </RelativeLayout>
 
     <include
@@ -70,14 +63,6 @@
         android:layout_marginTop="15dp"
         android:background="#fff3f3f3" />
 
-
-    <!--    <include-->
-    <!--        android:layout_marginTop="16dp"-->
-    <!--        android:id="@+id/include_game_tab"-->
-    <!--        layout="@layout/xiangqing_switch"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_below="@id/line_grey"/>-->
 
 
     <com.google.android.material.tabs.TabLayout

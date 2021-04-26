@@ -51,19 +51,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.video.VideoListener;
+
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.shentu.gamebox.R;
@@ -176,7 +164,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private FrameLayout fragment_tab1;
     private FrameLayout fragment_tab2;
     private FrameLayout fragment_tab3;
-    private SimpleExoPlayer simpleExoPlayer;
+
     private boolean playWhenReady = true;
     private int currentWindow;
     private long playbackPosition;
@@ -196,9 +184,9 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         fragment_tab2 = view.findViewById(R.id.fragment_tab2);
         fragment_tab3 = view.findViewById(R.id.fragment_tab3);
         video_view_layout = view.findViewById(R.id.video_view_layout);
-        exo_fullscreen_button = view.findViewById(R.id.exo_fullscreen_button);
-//        image_view = view.findViewById(R.id.detail_image_view);
-//        play_img = view.findViewById(R.id.play_img);
+
+        image_view = view.findViewById(R.id.detail_image_view);
+
         down_prograss = view.findViewById(R.id.down_prograss);
         btn_download = view.findViewById(R.id.game_download);
         viewpager = view.findViewById(R.id.gamepg_viewpg);
@@ -258,7 +246,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             btn_download.setText("打开");
         }
 
-         simpleExoPlayer = new SimpleExoPlayer.Builder(mActivity).build();
+
 
     }
 
@@ -374,21 +362,14 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                         }
                     });
                     if (!videoUri.isEmpty()) {
-//                        play_img.setVisibility(View.VISIBLE);
-//                        Glide.with(mActivity).load(cover).apply(override).into(image_view);
-//                        play_img.setOnClickListener(new View.OnClickListener() {
-//                            @Override
-//                            public void onClick(View v) {
 //
                                 videoPlayer(videoUri,cover);
-//                                image_view.setVisibility(View.GONE);
-//                                play_img.setVisibility(View.GONE);
-//                            }
-//                        });
+                                image_view.setVisibility(View.GONE);
+
                     } else {
 
                         imgsList = JSONArray.parseArray(beanImgs, String.class);
-//                        image_view.setVisibility(View.VISIBLE);
+                        image_view.setVisibility(View.VISIBLE);
                         videoView.setVisibility(View.GONE);
                         LogUtils.e(cover);
                         if (cover.isEmpty() && imgsList.size() != 0) {
@@ -906,7 +887,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         EventBus.getDefault().unregister(this);
         /*Rxjava解除订阅*/
         mDisposable.dispose();
-        /*释放播放器*/
-        simpleExoPlayer.release();
+
     }
 }
