@@ -569,21 +569,22 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             //下载游戏 展示进度条
             case R.id.game_download:
 
-                if (btn_download.getText() != null && btn_download.getText().equals("打开")) {
+                if ( btn_download.getText().equals("打开")) {
                     //进行跳转
                     /*包名不为空并且安装了*/
-                    if (!pkName.isEmpty() && INSTALLED ){
+                    if (constant.isAppInstalled(pkName) ){
                     try {
                         Intent aPackage = mActivity.getPackageManager().getLaunchIntentForPackage(pkName);
                         mActivity.startActivity(aPackage);
                     } catch (Exception e) {
                         Toast.makeText(mActivity, "请先安装app", Toast.LENGTH_SHORT).show();
-                        if (downLoadfile != null && !INSTALLED) {
+                    }
+                    }else{
+                        if (downLoadfile != null ) {
                             UpdateVersion.installApk(mActivity, downLoadfile);
                         } else {
                             btn_download.setText("下载");
                         }
-                    }
                     }
                 } else if (btn_download.getText().equals("下载")) {
 
@@ -647,6 +648,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                 if (packageName.contains(pkName)) {
                     INSTALLED = true;
                 }
+                btn_download.setText("打开");
                 LogUtils.e("安装了" + packageName);
             }
             if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
