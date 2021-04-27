@@ -20,8 +20,6 @@ public class FieldMapUtils {
 
     public static HashMap<String,Object> getRequestBody(String type,String gameId,String agent_code,String action,String name,String version){
 
-
-
         ServiceBean serviceBean = new ServiceBean();
         ParamBean paramBean = new ParamBean();
         String t = Constant.getCurrentTime();

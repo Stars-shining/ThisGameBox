@@ -1,13 +1,10 @@
 package com.shentu.gamebox.ui;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -15,38 +12,23 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.text.Html;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -55,10 +37,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.shentu.gamebox.R;
 import com.shentu.gamebox.adapter.TabFragmentAdapter;
-import com.shentu.gamebox.adapter.mViewPagerAdapter;
 import com.shentu.gamebox.adapter.myTabViewAdapter;
 import com.shentu.gamebox.base.BaseApplication;
 import com.shentu.gamebox.bean.BannerBean;
@@ -75,19 +55,14 @@ import com.shentu.gamebox.http.ApiException;
 import com.shentu.gamebox.http.RetrofitManager;
 
 import com.shentu.gamebox.http.UpdateVersion;
-import com.shentu.gamebox.plugin.PluginManager;
 
 import com.shentu.gamebox.utils.Constant;
 import com.shentu.gamebox.utils.DialogUtils;
 import com.shentu.gamebox.utils.FieldMapUtils;
-import com.shentu.gamebox.utils.Indicator;
 import com.shentu.gamebox.utils.LogUtils;
 import com.shentu.gamebox.utils.SharePreferenceUtil;
 import com.shentu.gamebox.view.CustomProgress;
 import com.shentu.gamebox.base.BaseFragment;
-import com.shentu.gamebox.view.MVideoController;
-import com.shentu.gamebox.view.widget.MmediaController;
-import com.shentu.gamebox.view.widget.VideoView;
 
 
 import org.greenrobot.eventbus.EventBus;
@@ -107,7 +82,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.jzvd.JZTextureView;
 import cn.jzvd.Jzvd;
 import cn.jzvd.JzvdStd;
 import io.reactivex.Observable;

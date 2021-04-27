@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.shentu.gamebox.R;
 import com.shentu.gamebox.bean.GridItem;
@@ -63,8 +64,8 @@ public class GridItemAdapter extends BaseAdapter {
         }
         VipBean vipBean = gridData.get(position);
 
-            holder.price.setBackground(mContext.getDrawable(R.drawable.price_table_body));
-            holder.level.setBackground(mContext.getDrawable(R.drawable.price_table_body));
+            holder.price.setBackground(ContextCompat.getDrawable(mContext,R.drawable.price_table_body));
+            holder.level.setBackground(ContextCompat.getDrawable(mContext,R.drawable.price_table_body));
             holder.price.setText(vipBean.getPrice());
             holder.level.setText(vipBean.getLavel());
 

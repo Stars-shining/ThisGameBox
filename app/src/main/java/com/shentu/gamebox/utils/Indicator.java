@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.lang.reflect.Field;
-
+/*自定义指示条样式*/
 public class Indicator {
 
     private static Field slidingTabIndicator;

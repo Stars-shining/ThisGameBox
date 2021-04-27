@@ -18,7 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Keep;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSON;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -42,12 +43,9 @@ import com.shentu.gamebox.bean.BannerBean;
 import com.shentu.gamebox.bean.GameBean;
 import com.shentu.gamebox.bean.HomeItem;
 import com.shentu.gamebox.bean.HttpResult;
-import com.shentu.gamebox.bean.RecGameBean;
+
 import com.shentu.gamebox.bean.VersionBean;
-import com.shentu.gamebox.greendao.DaoMaster;
-import com.shentu.gamebox.greendao.DaoSession;
-import com.shentu.gamebox.greendao.GameData;
-import com.shentu.gamebox.greendao.GameDataDao;
+
 import com.shentu.gamebox.http.ApiException;
 import com.shentu.gamebox.http.RetrofitManager;
 import com.shentu.gamebox.base.BaseActivity;
@@ -58,13 +56,16 @@ import com.shentu.gamebox.utils.FieldMapUtils;
 import com.shentu.gamebox.utils.LogUtils;
 import com.shentu.gamebox.utils.Permission;
 import com.shentu.gamebox.utils.SharePreferenceUtil;
+import com.shentu.gamebox.utils.usage.PackageInfo;
+import com.shentu.gamebox.utils.usage.UseTimeDateManager;
 import com.shentu.gamebox.view.CustomProgress;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,9 +92,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private RecyclerView gameLayout;
     private ArrayList<Fragment> fragments;
     /*列表名称*/
-    @Keep
+
     private TextView hot_txt;
-    @Keep
+
     private TextView rec_txt;
     /*列表*/
     private RecyclerView hot_recycle;
@@ -109,15 +110,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView rec_more;
     private ImageView firstpg_min;
     //热门&推荐游戏列表
-    @Keep
+
     private List<HomeItem> hotGameBeans;
-    @Keep
+
     private List<HomeItem> recGameBeans;
 
     //首次存放3条数据集合
-    @Keep
+
     private ArrayList<HomeItem> hotList;
-    @Keep
+
     private List<HomeItem> recList;
 
 
@@ -129,19 +130,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ImageView assistant;
     private ProgressBar update_progres;
     private View dialogView;
-    @Keep
+
     private Permission permission;
     private ConstraintLayout include_instro;
-    @Keep
+
     private int HOTTYPE = 1;
-    @Keep
+
     private int RECTYPE = 2;
-    @Keep
+
     private String hotType = "1";
-    @Keep
+
     private String recType = "2";
 
-    @Keep
+
     private String agentCode;
     private Disposable mDisposable;
     private ImageView rec_head_img;
@@ -155,6 +156,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     /*是否全部展开*/
     private boolean isUnfold = false;
+    private UseTimeDateManager useManager;
     //    private LinearLayout rec_layout_parent;
 
 
@@ -169,14 +171,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
 //        getSupportActionBar().hide();
 
-//        ActionBar actionBar = getSupportActionBar();
-////        actionBar.hide();
-//        assert actionBar != null;
-//        View view = LayoutInflater.from(this).inflate(R.layout.action_title, null);
-//        TextView title = view.findViewById(R.id.detial_title);
-//        title.setText("游戏盒子");
-//        actionBar.setCustomView(view);
-//        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
     }
 
     @Override
@@ -220,14 +214,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         Constant constant = new Constant(this);
         agentCode = constant.getAgentCode();
-        permission = new Permission(this);
 
         /*保存设备标识*/
         constant.saveUniqueID();
         /*保存首次开启时间*/
         String openTime = (String) SharePreferenceUtil.getParam(this, "openTime", "");
-        if ( null!= openTime &&!openTime.isEmpty()){
-            SharePreferenceUtil.setParam(this,Constant.getCurrentTime(),"openTime");
+        if (null != openTime && !openTime.isEmpty()) {
+            SharePreferenceUtil.setParam(this, Constant.getCurrentTime(), "openTime");
         }
         /*游戏列表*/
         gamesInfo(recType, agentCode);
@@ -238,6 +231,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         /*版本检测*/
         CheckVersionCode(agentCode);
+
+        /*usetimeManager 初始化*/
+        useManager = UseTimeDateManager.getInstance(this);
+        useManager.refreshData(0);
+        /*app 打开次数 使用时间*/
+        getAppUseInfo();
+
+    }
+
+    private void getAppUseInfo() {
+        ArrayList<PackageInfo> packageInfos = useManager.getmPackageInfoListOrderByTime();
+        for (PackageInfo info: packageInfos) {
+            LogUtils.e(JSON.toJSON(info)+"");
+        }
     }
 
     private void gamesInfo(String type, String agent_code) {
@@ -246,29 +253,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         recList = new ArrayList<>();
 
         HashMap<String, Object> map = FieldMapUtils.getRequestBody(type, "", agent_code, Constant.GET_GAMES, "");
-        if (type.equals("2")){
+        if (type.equals("2")) {
             //推荐游戏
             requestRecGames(map);
-
-        }else{
+        } else {
             //热门版本
             requestHotGames(map);
         }
-
-
-
-
-
-
-
-
-
-
     }
 
     /*请求网络获取games数据*/
 
-    public void requestHotGames(HashMap<String,Object> map) {
+    public void requestHotGames(HashMap<String, Object> map) {
 //        RequestBody requestBody = getRequestBody();
         RetrofitManager.getInstance().GameListInfo(new Observer<HttpResult<GameBean<HomeItem>>>() {
             @Override
@@ -280,7 +276,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             public void onNext(@io.reactivex.annotations.NonNull HttpResult<GameBean<HomeItem>> gameBeanHttpResult) {
                 //获取game数据
                 GameBean<HomeItem> data = gameBeanHttpResult.getData();
-                    hotGameBeans = data.getList();
+                hotGameBeans = data.getList();
             }
 
             @Override
@@ -289,21 +285,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //                ApiException apiException = (ApiException) e;
 //                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
             }
+
             @Override
             public void onComplete() {
                 /*首次加载显示3条*/
                 if (hotGameBeans != null && hotGameBeans.size() != 0) {
                     hot_txt.setText("热门版本");
-                    if (hotGameBeans.size() > 3 ) {
-                        if (isUnfold){
+                    if (hotGameBeans.size() > 3) {
+                        if (isUnfold) {
                             hot_more.setVisibility(View.VISIBLE);
                             hotList.addAll(hotGameBeans.subList(0, 3));
                             /*填充recyclerview*/
                             setRecyclerView(hot_recycle, hotList, HOTTYPE);
-                        }else{
+                        } else {
                             setRecyclerView(hot_recycle, hotGameBeans, HOTTYPE);
                         }
-                    } else  {
+                    } else {
 //                        hot_more.setVisibility(View.GONE);
                         setRecyclerView(hot_recycle, hotGameBeans, HOTTYPE);
                     }
@@ -315,7 +312,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
     }
-    public void requestRecGames(HashMap<String,Object> map) {
+
+    public void requestRecGames(HashMap<String, Object> map) {
 //        RequestBody requestBody = getRequestBody();
         RetrofitManager.getInstance().GameListInfo(new Observer<HttpResult<GameBean<HomeItem>>>() {
             @Override
@@ -327,12 +325,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             public void onNext(@io.reactivex.annotations.NonNull HttpResult<GameBean<HomeItem>> gameBeanHttpResult) {
                 //获取game数据
                 GameBean<HomeItem> data = gameBeanHttpResult.getData();
-                    recGameBeans = data.getList();
-                    if (null != recGameBeans&& recGameBeans.size() != 0){
-                        isUnfold = true;
-                    }else{
-                        isUnfold = false;
-                    }
+                recGameBeans = data.getList();
+                if (null != recGameBeans && recGameBeans.size() != 0) {
+                    isUnfold = true;
+                } else {
+                    isUnfold = false;
+                }
             }
 
             @Override
@@ -341,10 +339,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //                ApiException apiException = (ApiException) e;
 //                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
             }
+
             @Override
             public void onComplete() {
                 /*首次加载显示3条*/
-                if (recGameBeans != null  && recGameBeans.size() != 0) {
+                if (recGameBeans != null && recGameBeans.size() != 0) {
                     rec_txt.setText("推荐游戏");
                     if (recGameBeans.size() > 3 && hotGameBeans.size() != 0) {
                         recList.addAll(recGameBeans.subList(0, 3));
@@ -447,8 +446,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_layout, null);
                 TextView phone_num = dialogView.findViewById(R.id.phone_num);
                 TextView work_time = dialogView.findViewById(R.id.work_time);
-                phone_num.setText("联系客服：" + assistantBean.getKf_number());
-                work_time.setText("工作时间：" + assistantBean.getKf_time());
+                phone_num.setText(String.format("联系客服：%s", assistantBean.getKf_number()));
+                work_time.setText(String.format("工作时间：%s", assistantBean.getKf_time()));
                 DialogUtils.getDialog(MainActivity.this, dialogView);
 
             }
@@ -553,11 +552,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     alertDialog.show();
 
 
-
                     updateBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            permission.initPermission();
+                            Permission.initPermission();
 
                             /*下载文件*/
                             if (!url.isEmpty()) {
@@ -612,9 +610,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull Integer integer) {
                         //设置progressdialog 进度条进度
-                      int t =  (int) (downloadLength * 1.0f / contentLength * 100);
+                        int t = (int) (downloadLength * 1.0f / contentLength * 100);
                         dialog.setProgress(t);
-                        if (downloadLength == contentLength){
+                        if (downloadLength == contentLength) {
                             dialog.dismiss();
                         }
                     }

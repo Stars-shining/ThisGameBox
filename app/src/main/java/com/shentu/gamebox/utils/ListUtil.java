@@ -6,8 +6,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 /**
- * Created by liuyuepeng
- * on 2019/12/3
+ * 重新计算list的高度
  */
 public class ListUtil {
 
