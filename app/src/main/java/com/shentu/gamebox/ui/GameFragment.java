@@ -2,9 +2,11 @@ package com.shentu.gamebox.ui;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -58,6 +60,7 @@ import com.shentu.gamebox.R;
 import com.shentu.gamebox.adapter.TabFragmentAdapter;
 import com.shentu.gamebox.adapter.mViewPagerAdapter;
 import com.shentu.gamebox.adapter.myTabViewAdapter;
+import com.shentu.gamebox.base.BaseApplication;
 import com.shentu.gamebox.bean.BannerBean;
 import com.shentu.gamebox.bean.DetailBean;
 import com.shentu.gamebox.bean.DetialGameBean;
@@ -65,6 +68,9 @@ import com.shentu.gamebox.bean.DownLoadBean;
 import com.shentu.gamebox.bean.HomeItem;
 import com.shentu.gamebox.bean.HttpResult;
 import com.shentu.gamebox.bean.VipBean;
+import com.shentu.gamebox.greendao.DaoSession;
+import com.shentu.gamebox.greendao.GameData;
+import com.shentu.gamebox.greendao.GameDataDao;
 import com.shentu.gamebox.http.ApiException;
 import com.shentu.gamebox.http.RetrofitManager;
 
@@ -117,6 +123,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.shentu.gamebox.utils.Constant.INSTALLED;
+
 public class GameFragment extends BaseFragment implements View.OnClickListener, Html.ImageGetter {
 
     private ViewPager viewpager;
@@ -127,17 +135,21 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private boolean needIntercept = false;
     int mLastXIntercept = 0;
     int mLastYIntercept = 0;
+    /*下载进度条*/
     private CustomProgress down_prograss;
     private Handler mHandler;
     private int currentProgress;
     private Button btn_download;
+    /*播放视频UI*/
     private JzvdStd videoView;
     private ImageView xq_game_img;
     private TextView xq_game_title;
     private TextView xq_game_rec;
     private TextView game_content;
+    /*游戏id*/
     private String gameId;
     private String path3;
+    /*游戏详情bean对象*/
     private HomeItem homeItem;
     private BannerBean bannerBean;
     /*福利 返现*/
@@ -151,16 +163,20 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private ImageView image_view;
     private List<String> imgsList;
     private TextView scan_more;
+    /*总进度 下载进度*/
     private long downloadLength;
     private long contentLength;
     private myTabViewAdapter tabAdapter;
     private TabFragmentAdapter tabFragmentAdapter;
+    /*textview显示的最大行数*/
     private int maxline = 5;
-//    private MmediaController mmediaController;
+    //    private MmediaController mmediaController;
     private RelativeLayout video_view_layout;
     private ImageView play_img;
     private String url;
+    /*下载的安装包名*/
     private String apkname;
+
     private FrameLayout fragment_tab1;
     private FrameLayout fragment_tab2;
     private FrameLayout fragment_tab3;
@@ -169,7 +185,15 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private int currentWindow;
     private long playbackPosition;
     private ImageView exo_fullscreen_button;
-
+    /*常量类*/
+    private Constant constant;
+    /*下载apk文件*/
+    private File downLoadfile;
+    private MyIntentReceiver receiver;
+    /*保存的包名*/
+    private String pkName;
+    /*下载量*/
+    private int downLoadCount = 0;
 
     @Override
     protected int setView() {
@@ -236,22 +260,26 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     protected void initData() {
-        Constant constant = new Constant(mActivity);
+        constant = new Constant(mActivity);
         agent_code = constant.getAgentCode();
 //        Tabadd();
         requestDetail();
-        /*查看游戏是否安装*/
-        String pkName = (String) SharePreferenceUtil.getParam(mActivity, gameId, "");
-        if (null != pkName && !pkName.isEmpty()) {
+
+        LogUtils.e(constant.readUUId());
+//        /*查看游戏是否安装*/
+        pkName = (String) SharePreferenceUtil.getParam(mActivity, gameId, "");
+        if (null != pkName && !pkName.isEmpty() && INSTALLED) {
+            LogUtils.e(INSTALLED + "333333333333333333");
             btn_download.setText("打开");
         }
 
 
-
+        SaveGameInfo();
     }
 
+
     public void videoPlayer(String uri, String cover) {
-        videoView.setUp(uri,"", Jzvd.SCREEN_NORMAL);
+        videoView.setUp(uri, "", Jzvd.SCREEN_NORMAL);
         JzvdStd.SAVE_PROGRESS = false;
         Glide.with(mActivity).load(cover).into(videoView.posterImageView);
         videoView.startVideo();
@@ -274,7 +302,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     public Drawable getDrawable(String source) {
-
         return null;
     }
 
@@ -292,6 +319,40 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         LogUtils.e(type + "");
 //        bannerBean = (BannerBean) bundle.getSerializable("bannerBean");
 
+    }
+
+
+    private void SaveGameInfo() {
+
+        String openTime = (String) SharePreferenceUtil.getParam(mActivity, "openTime", "");
+        BaseApplication instance = BaseApplication.getInstance();
+        DaoSession daoSession = instance.getDaoSession();
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = instance.getPackageManager().getPackageInfo(mActivity.getPackageName(), 0);
+            long firstInstallTime = packageInfo.firstInstallTime;
+            long lastUpdateTime = packageInfo.lastUpdateTime;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        GameData gameData = new GameData();
+
+        gameData.setAgent_code(agent_code);
+        if (openTime != null) {
+            gameData.setCurrentTiem(openTime);
+        }
+        gameData.setUUID(constant.readUUId());
+        if (gameId != null) {
+            gameData.setGameId(gameId);
+        }
+        if (type != null) {
+            gameData.setType(type);
+        }
+        gameData.setDownloadCount("0");
+
+        GameDataDao gameDataDao = daoSession.getGameDataDao();
+//        gameDataDao.insert(gameData);
     }
 
     /*详情页*/
@@ -353,7 +414,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                     game_content.setText(version_intro);
 
 
-
                     game_content.setHeight(game_content.getLineHeight() * maxline);
                     game_content.post(new Runnable() {
                         @Override
@@ -363,11 +423,10 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                     });
                     if (!videoUri.isEmpty()) {
 //
-                                videoPlayer(videoUri,cover);
-                                image_view.setVisibility(View.GONE);
+                        videoPlayer(videoUri, cover);
+                        image_view.setVisibility(View.GONE);
 
                     } else {
-
                         imgsList = JSONArray.parseArray(beanImgs, String.class);
                         image_view.setVisibility(View.VISIBLE);
                         videoView.setVisibility(View.GONE);
@@ -379,7 +438,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                         }
                     }
                     if (!beanRebate.equals("0")) {
-
                         reback_btn.setVisibility(View.VISIBLE);
                         reback_btn.setText("现金返利" + rebate + "%");
 //                        LogUtils.e(detialGameBean.toString());
@@ -394,11 +452,8 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 //                    videoView.setVideoURI(Uri.parse(path3));
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("detialGameBean", detialGameBean);
-
-
                     /*eventbus发送数据*/
                     EventBus.getDefault().postSticky(detialGameBean);
-
                     /*初始化地步tab和viewpager+fragment*/
                     initViewPager(beanImgs, vipBeans.get(0), openClose);
                 }
@@ -436,7 +491,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         }
 
 
-
         FragmentTransaction fm = getChildFragmentManager().beginTransaction();
         fm.add(R.id.fragment_tab1, imageFragment);
         fm.add(R.id.fragment_tab2, priceFragment);
@@ -448,19 +502,19 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 //        fm.hide(priceFragment);
 //        fm.hide(openareaFragment);
 
-        if (tabAt.isSelected()&& tabAt.getText().equals("游戏截图")){
+        if (tabAt.isSelected() && tabAt.getText().equals("游戏截图")) {
 
             fragment_tab1.setVisibility(View.VISIBLE);
             fragment_tab2.setVisibility(View.GONE);
             fragment_tab3.setVisibility(View.GONE);
 
         }
-        if (tabAt.isSelected()&& tabAt.getText().equals("VIP价格列表")){
+        if (tabAt.isSelected() && tabAt.getText().equals("VIP价格列表")) {
             fragment_tab1.setVisibility(View.GONE);
             fragment_tab2.setVisibility(View.VISIBLE);
             fragment_tab3.setVisibility(View.GONE);
         }
-        if (tabAt.isSelected()&& tabAt.getText().equals("开合区介绍")){
+        if (tabAt.isSelected() && tabAt.getText().equals("开合区介绍")) {
             fragment_tab1.setVisibility(View.GONE);
             fragment_tab2.setVisibility(View.GONE);
             fragment_tab3.setVisibility(View.VISIBLE);
@@ -483,40 +537,41 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getText().equals("游戏截图")){
+                if (tab.getText().equals("游戏截图")) {
                     fragment_tab1.setVisibility(View.VISIBLE);
                     fragment_tab2.setVisibility(View.GONE);
                     fragment_tab3.setVisibility(View.GONE);
                 }
-                 if (tab.getText().equals("VIP价格列表")){
-                     fragment_tab1.setVisibility(View.GONE);
-                     fragment_tab2.setVisibility(View.VISIBLE);
-                     fragment_tab3.setVisibility(View.GONE);
+                if (tab.getText().equals("VIP价格列表")) {
+                    fragment_tab1.setVisibility(View.GONE);
+                    fragment_tab2.setVisibility(View.VISIBLE);
+                    fragment_tab3.setVisibility(View.GONE);
                 }
-                 if (tab.getText().equals("开合区介绍")){
-                     fragment_tab1.setVisibility(View.GONE);
-                     fragment_tab2.setVisibility(View.GONE);
-                     fragment_tab3.setVisibility(View.VISIBLE);
+                if (tab.getText().equals("开合区介绍")) {
+                    fragment_tab1.setVisibility(View.GONE);
+                    fragment_tab2.setVisibility(View.GONE);
+                    fragment_tab3.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                if (tab.getText().equals("游戏截图")){
+                if (tab.getText().equals("游戏截图")) {
                     fragment_tab1.setVisibility(View.GONE);
 
 //                    fm.hide(imageFragment);
                 }
-                if (tab.getText().equals("VIP价格列表")){
+                if (tab.getText().equals("VIP价格列表")) {
                     fragment_tab2.setVisibility(View.GONE);
 
 //                    fm.hide(priceFragment);
                 }
-                if (tab.getText().equals("开合区介绍")){
+                if (tab.getText().equals("开合区介绍")) {
                     fragment_tab3.setVisibility(View.GONE);
 //                    fm.hide(openareaFragment);
                 }
             }
+
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
 
@@ -542,26 +597,32 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
                 if (btn_download.getText() != null && btn_download.getText().equals("打开")) {
                     //进行跳转
-                    String pkName = (String) SharePreferenceUtil.getParam(mActivity, "gameId", "");
+                    /*包名不为空并且安装了*/
+                    if (!pkName.isEmpty() && INSTALLED ){
+                    try {
+                        Intent aPackage = mActivity.getPackageManager().getLaunchIntentForPackage(pkName);
+                        mActivity.startActivity(aPackage);
+                    } catch (Exception e) {
+                        Toast.makeText(mActivity, "请先安装app", Toast.LENGTH_SHORT).show();
+                        if (downLoadfile != null && !INSTALLED) {
+                            UpdateVersion.installApk(mActivity, downLoadfile);
+                        } else {
+                            btn_download.setText("下载");
+                        }
+                    }
+                    }
+                } else if (btn_download.getText().equals("下载")) {
 
-                    Intent aPackage = mActivity.getPackageManager().getLaunchIntentForPackage(pkName);
-                    String className = aPackage.getComponent().getClassName();
-
-
-                    LogUtils.e("packageName" + pkName + "activityName" + className);
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.setComponent(new ComponentName(pkName, className));
-                    startActivity(intent);
-
-//                    OpenActivity();
-                } else {
+//                    downLoadCount++;
+                    /*未安装 且安装包已存在 启动安装*/
+                    if (downLoadfile != null && !INSTALLED){
+                        UpdateVersion.installApk(mActivity, downLoadfile);
+                    }else{
                     Toast.makeText(mActivity, "下载中", Toast.LENGTH_SHORT).show();
-                    btn_download.setVisibility(View.GONE);
                     down_prograss.setVisibility(View.VISIBLE);
-
+                    btn_download.setVisibility(View.GONE);
                     requestDownUrl();
+                    }
                 }
                 break;
             /*返利*/
@@ -590,34 +651,59 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
-
-
-    private void storeApkInfo(File file) {
-        String packageName;
-        String activityName;
-        PackageInfo packageInfo = null;
-
-        try {
-            packageInfo = mActivity.getPackageManager().getPackageInfo(file.getPath(), PackageManager.GET_ACTIVITIES);
-
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        packageName = packageInfo.packageName;
-        /**/
-        SharePreferenceUtil.setParam(mActivity, packageName, gameId);
-
-        LogUtils.e("packageName" + packageName  );
+    @Override
+    public void onStart() {
+        super.onStart();
+        receiver = new MyIntentReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.intent.action.PACKAGE_ADDED");
+        filter.addAction("android.intent.action.PACKAGE_REMOVED");
+        /*这个属性必须添加*/
+        filter.addDataScheme("package");
+        mActivity.registerReceiver(receiver, filter);
 
     }
 
+    class MyIntentReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED")) {
+                String packageName = intent.getDataString();
+
+                if (packageName.contains(pkName)) {
+                    INSTALLED = true;
+                }
+                LogUtils.e("安装了" + packageName);
+            }
+            if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
+                String packageName = intent.getDataString();
+                if (packageName.contains(pkName)) {
+                    INSTALLED = false;
+                }
+                btn_download.setText("下载");
+                LogUtils.e("卸载了" + packageName);
+            }
+        }
+    }
+
+    ;
+
+
+    private void storeApkInfo(File file) {
+        PackageManager pm = mActivity.getPackageManager();
+        PackageInfo packageInfo = pm.getPackageArchiveInfo(file.getPath(), PackageManager.GET_ACTIVITIES);
+        if (packageInfo != null) {
+            String fileApkName = packageInfo.applicationInfo.packageName;
+            SharePreferenceUtil.setParam(mActivity, fileApkName, gameId);
+        }
+    }
+
     private void showGiftHtml(String htmlDate) {
-        if (!htmlDate.isEmpty()){
+        if (!htmlDate.isEmpty()) {
 
             View view = LayoutInflater.from(mActivity).inflate(R.layout.activity_webview, null);
             DialogUtils.showHtmlDialog(mActivity, view, htmlDate);
-        }else{
+        } else {
             Toast.makeText(mActivity, "很抱歉，暂无内容！", Toast.LENGTH_SHORT).show();
         }
 
@@ -686,7 +772,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
         RetrofitManager.getInstance().DownLoadGame(new Observer<HttpResult<DownLoadBean>>() {
 
-
             private String msg;
             private DownLoadBean resultData;
 
@@ -719,7 +804,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                     Toast.makeText(mActivity, msg, Toast.LENGTH_SHORT).show();
                 }
 
-
 //                UpdateVersion updateVersion = new UpdateVersion(mActivity);
 //                if (url != null) {
 //                    updateVersion.downFile(url);
@@ -730,7 +814,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
     /*下载文件*/
     public void downFile(String url) {
-        UpdateVersion updateVersion = new UpdateVersion(mActivity);
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(@io.reactivex.annotations.NonNull ObservableEmitter<Integer> emitter) throws Exception {
@@ -750,11 +833,11 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
                         down_prograss.setProgress(integer);
                         down_prograss.incrementProgressBy((int) (downloadLength * 1.0f / contentLength * 100));
-//                        if (contentLength == downloadLength) {
-//                            btn_download.setVisibility(View.VISIBLE);
-//                            down_prograss.setVisibility(View.GONE);
-//                            btn_download.setText("打开");
-//                        }
+                        if (contentLength == downloadLength) {
+                            btn_download.setVisibility(View.VISIBLE);
+                            down_prograss.setVisibility(View.GONE);
+                            btn_download.setText("打开");
+                        }
                     }
 
                     @Override
@@ -791,16 +874,16 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 //                    breakPoint(url, emitter);
                     downApk(url, emitter);
                 }
-
                 InputStream is = null;
                 FileOutputStream fos = null;
                 int len;
                 try {
                     is = Objects.requireNonNull(response.body()).byteStream();
-                    String[] apks = "/".split(url);
-                    apkname = apks[apks.length - 1];
-                    File file = createFile(apkname);
-                    fos = new FileOutputStream(file);
+//                    String[] apks = "/".split(url);
+//                    LogUtils.e(apks[apks.length]);
+//                    apkname = apks[apks.length];
+                    downLoadfile = createFile();
+                    fos = new FileOutputStream(downLoadfile);
                     byte[] bytes = new byte[2048];
                     long total = Objects.requireNonNull(response.body()).contentLength();
                     contentLength = total;
@@ -816,11 +899,12 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                     fos.flush();
                     LogUtils.e("下载完成");
 
-                    /*获取apk包名 类名*/
-//                    storeApkInfo(file);
+                    /*获取apk包名 */
+                    if (downLoadfile != null) {
+                        storeApkInfo(downLoadfile);
+                    }
                     //下载完成 安装apk
-                    UpdateVersion.installApk(mActivity, file);
-
+                    UpdateVersion.installApk(mActivity, downLoadfile);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -833,9 +917,9 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         });
     }
 
-    private File createFile(String apkname) {
-        String path = mActivity.getExternalFilesDir("dir").getPath();
-        File file = new File(path, apkname);
+    private File createFile() {
+        String path = mActivity.getExternalFilesDir("file").getPath();
+        File file = new File(path, "debug.apk");
         if (file.exists()) {
             file.delete();
         }
@@ -887,6 +971,11 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         EventBus.getDefault().unregister(this);
         /*Rxjava解除订阅*/
         mDisposable.dispose();
+        /*解除广播*/
+        if (receiver != null) {
+            mActivity.unregisterReceiver(receiver);
+        }
 
+        LogUtils.e(INSTALLED + "");
     }
 }

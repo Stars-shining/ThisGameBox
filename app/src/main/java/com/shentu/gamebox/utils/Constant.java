@@ -2,9 +2,12 @@ package com.shentu.gamebox.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.widget.Toast;
 
 import androidx.annotation.Keep;
 import androidx.annotation.StringRes;
@@ -43,11 +46,11 @@ public class Constant {
     public static String GET_BANNER = "game_box/api/get_banner";
     public static String DOWN_LOAD = "game_box/api/download";
     public static String CHECK_VERSION = "game_box/api/check_version";
+    public static boolean INSTALLED = false;
     /*uuid。txt 文件*/
     String fileName = "UUID.txt";
     /*代理code*/
 
-    public static String GAME_ID = "8";
 
     public static String getCurrentTime() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
@@ -142,5 +145,36 @@ public class Constant {
         }
         assert buffer != null;
         return buffer.toString();
+    }
+    /*获取app包名*/
+    public String getApkInfo(File file){
+        PackageManager pm = mContext.getPackageManager();
+        PackageInfo packageInfo = pm.getPackageArchiveInfo(file.getPath(), PackageManager.GET_ACTIVITIES);
+        if (packageInfo != null){
+            return     packageInfo.applicationInfo.packageName;
+        }
+        return null;
+    }
+
+    public void startApp (String packageName){
+        try{
+            Intent aPackage = mContext.getPackageManager().getLaunchIntentForPackage(packageName);
+            mContext.startActivity(aPackage);
+        }catch (Exception e){
+            INSTALLED = false;
+            Toast.makeText(mContext, "请先安装app", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public boolean isAppInstalled(String pkName){
+        PackageManager packageManager = mContext.getPackageManager();
+        boolean installed = false;
+        try {
+             packageManager.getPackageInfo(pkName, PackageManager.GET_ACTIVITIES);
+            installed = true;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            installed = false;
+        }
+        return installed;
     }
 }

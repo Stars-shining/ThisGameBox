@@ -48,6 +48,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.shentu.gamebox.utils.Constant.INSTALLED;
+
 public class UpdateVersion {
 
     private Context mContext;
@@ -397,15 +399,17 @@ public class UpdateVersion {
         List<ResolveInfo> resolveInfos = mContext.getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         for (ResolveInfo info:resolveInfos) {
             if (info != null && info.activityInfo != null){
-
                 String packageName = info.activityInfo.packageName;
                 mContext.grantUriPermission(packageName,contentUri,Intent.FLAG_GRANT_READ_URI_PERMISSION
                 | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
             }
         }
         mContext.startActivity(intent);
+        INSTALLED = true;
+
+
         //弹出窗口把原程序关闭
         //避免安装完毕 点击打开没反应
-        Process.killProcess(Process.myPid());
+//        Process.killProcess(Process.myPid());
     }
 }

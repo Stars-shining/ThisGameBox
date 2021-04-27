@@ -57,7 +57,7 @@ public class BaseApplication extends Application {
      *
      * @return BaseApplication
      */
-    public static BaseApplication getApplication() {
+    public static BaseApplication getInstance() {
         return application;
     }
 }

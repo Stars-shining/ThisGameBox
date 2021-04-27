@@ -57,6 +57,7 @@ import com.shentu.gamebox.utils.DialogUtils;
 import com.shentu.gamebox.utils.FieldMapUtils;
 import com.shentu.gamebox.utils.LogUtils;
 import com.shentu.gamebox.utils.Permission;
+import com.shentu.gamebox.utils.SharePreferenceUtil;
 import com.shentu.gamebox.view.CustomProgress;
 
 import org.greenrobot.eventbus.EventBus;
@@ -216,33 +217,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void initData() {
-        BaseApplication application = (BaseApplication)getApplication();
 
         Constant constant = new Constant(this);
         agentCode = constant.getAgentCode();
-        /*保存设备标识*/
-        constant.saveUniqueID();
-        /*activity开启时间*/
-        Constant.getCurrentTime();
-        /*标识符*/
-        constant.readUUId();
-
-        DaoSession daoSession = application.getDaoSession();
-        GameData gameData = new GameData();
-        gameData.setAgent_code(agentCode);
-        gameData.setCurrentTiem(Constant.getCurrentTime());
-        gameData.setUUID(constant.readUUId());
-
-        GameDataDao gameDataDao = daoSession.getGameDataDao();
-        gameDataDao.insert(gameData);
-
-
-
         permission = new Permission(this);
 
+        /*保存设备标识*/
+        constant.saveUniqueID();
+        /*保存首次开启时间*/
+        String openTime = (String) SharePreferenceUtil.getParam(this, "openTime", "");
+        if ( null!= openTime &&!openTime.isEmpty()){
+            SharePreferenceUtil.setParam(this,Constant.getCurrentTime(),"openTime");
+        }
         /*游戏列表*/
         gamesInfo(recType, agentCode);
-
         /*查看更多*/
         mClick();
         /*横幅游戏info*/
@@ -251,8 +239,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         /*版本检测*/
         CheckVersionCode(agentCode);
     }
-
-
 
     private void gamesInfo(String type, String agent_code) {
 
@@ -506,9 +492,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         /*agent_code  version parent_version*/
         UpdateVersion version;
 
-        version = new UpdateVersion(MainActivity.this);
+//        version = new UpdateVersion(MainActivity.this);
         /*本地版本*/
-        int versionCode = version.getVersionCode();
+//        int versionCode = version.getVersionCode();
 
         String agent_version = getResources().getString(R.string.agent_version);
 
@@ -579,7 +565,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                 downFile(url);
                             } else {
                                 Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                                CheckVersionCode(agent_code);
+//                                CheckVersionCode(agent_code);
                             }
                         }
                     });
@@ -614,9 +600,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             public void subscribe(@io.reactivex.annotations.NonNull ObservableEmitter<Integer> emitter) throws Exception {
                 downApk(url, emitter);
 
-
-
-
             }
         }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -631,6 +614,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         //设置progressdialog 进度条进度
                       int t =  (int) (downloadLength * 1.0f / contentLength * 100);
                         dialog.setProgress(t);
+                        if (downloadLength == contentLength){
+                            dialog.dismiss();
+                        }
                     }
 
                     @Override
