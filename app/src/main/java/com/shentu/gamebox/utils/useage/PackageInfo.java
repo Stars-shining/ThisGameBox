@@ -1,4 +1,4 @@
-package com.shentu.gamebox.utils.usage;
+package com.shentu.gamebox.utils.useage;
 
 import java.util.Objects;
 

@@ -36,11 +36,11 @@ public interface ApiService {
     @POST("/game_box")
     Observable<HttpResult<GameBean<HomeItem>>> getGameList(@FieldMap Map<String, Object> map);
 
-    /*游戏列表  type ：1 专区游戏 2 推荐游戏*/
-    @FormUrlEncoded
-    @POST("/game_box")
-    Observable<HttpResult<GameBean<RecGameBean>>> getRecGameList(@FieldMap Map<String, Object> map);
-
+//    /*游戏列表  type ：1 专区游戏 2 推荐游戏*/
+//    @FormUrlEncoded
+//    @POST("/game_box")
+//    Observable<HttpResult<GameBean<RecGameBean>>> getRecGameList(@FieldMap Map<String, Object> map);
+//
 
     /*客服*/
     @FormUrlEncoded
@@ -59,6 +59,18 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/game_box")
     Observable<HttpResult<VersionBean>> checkVersion(@FieldMap Map<String, Object> map);
+
+    @FormUrlEncoded
+    @POST("/down_box/down_box")
+    Observable<HttpResult<Object>> boxInstallCount(@FieldMap Map<String, Object> map);
+
+    @FormUrlEncoded
+    @POST("/down_box/down_box")
+    Observable<HttpResult<Object>> boxStartCount(@FieldMap Map<String, Object> map);
+
+    @FormUrlEncoded
+    @POST("/down_box/down_box")
+    Observable<HttpResult<Object>> gameClickCount(@FieldMap Map<String, Object> map);
 
 
 }

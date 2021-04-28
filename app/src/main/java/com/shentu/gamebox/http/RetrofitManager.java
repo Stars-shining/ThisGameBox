@@ -29,6 +29,7 @@ import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
 @Keep
 public class RetrofitManager {
 
@@ -104,13 +105,14 @@ public class RetrofitManager {
                 .subscribe(observer);
 
     }
- /*推荐游戏列表*/
-    public void RecGameListInfo(Observer<HttpResult<GameBean<RecGameBean>>> observer, HashMap<String, Object> map) {
-        getApiService().getRecGameList(map).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(observer);
 
-    }
+//    /*推荐游戏列表*/
+//    public void RecGameListInfo(Observer<HttpResult<GameBean<RecGameBean>>> observer, HashMap<String, Object> map) {
+//        getApiService().getRecGameList(map).subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(observer);
+//
+//    }
 
     /*游戏详情*/
     public void GameDetailInfo(Observer<HttpResult<DetailBean>> observer, HashMap<String, Object> map) {
@@ -134,19 +136,39 @@ public class RetrofitManager {
     }
 
     /*apk游戏*/
-    public void DownLoadGame(Observer< HttpResult<DownLoadBean>> observer, HashMap<String, Object> map) {
+    public void DownLoadGame(Observer<HttpResult<DownLoadBean>> observer, HashMap<String, Object> map) {
         getApiService().download(map).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }
 
     /*apk游戏*/
-    public void CheckVersion(Observer< HttpResult<VersionBean>> observer, HashMap<String, Object> map) {
+    public void CheckVersion(Observer<HttpResult<VersionBean>> observer, HashMap<String, Object> map) {
         getApiService().checkVersion(map).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }
 
+    /*游戏计数  map  params参数 1、agent_code  2、game_id 3、game_action*/
+    public void GameClickCount(Observer<HttpResult<VersionBean>> observer, HashMap<String, Object> map) {
+        getApiService().checkVersion(map).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+    }
+
+    /*启动计数  map  params参数 1、agent_code  2、uuid*/
+    public void BoxStartCount(Observer<HttpResult<VersionBean>> observer, HashMap<String, Object> map) {
+        getApiService().checkVersion(map).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+    }
+
+    /*安装计数   map  params参数 1、agent_code  2、uuid */
+    public void BoxinstallCount(Observer<HttpResult<VersionBean>> observer, HashMap<String, Object> map) {
+        getApiService().checkVersion(map).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(observer);
+    }
 
 
 }

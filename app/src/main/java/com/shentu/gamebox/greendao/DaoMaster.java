@@ -22,11 +22,19 @@ public class DaoMaster extends AbstractDaoMaster {
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
         GameDataDao.createTable(db, ifNotExists);
+        boxDataDao.createTable(db, ifNotExists);
+        boxGameDataDao.createTable(db, ifNotExists);
+        boxInstallDao.createTable(db, ifNotExists);
+        boxLaunchDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
         GameDataDao.dropTable(db, ifExists);
+        boxDataDao.dropTable(db, ifExists);
+        boxGameDataDao.dropTable(db, ifExists);
+        boxInstallDao.dropTable(db, ifExists);
+        boxLaunchDao.dropTable(db, ifExists);
     }
 
     /**
@@ -46,6 +54,10 @@ public class DaoMaster extends AbstractDaoMaster {
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
         registerDaoClass(GameDataDao.class);
+        registerDaoClass(boxDataDao.class);
+        registerDaoClass(boxGameDataDao.class);
+        registerDaoClass(boxInstallDao.class);
+        registerDaoClass(boxLaunchDao.class);
     }
 
     public DaoSession newSession() {

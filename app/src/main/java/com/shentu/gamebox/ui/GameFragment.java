@@ -242,8 +242,8 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         LogUtils.e(constant.readUUId());
 //        /*查看游戏是否安装*/
         pkName = (String) SharePreferenceUtil.getParam(mActivity, gameId, "");
-        if (null != pkName && !pkName.isEmpty() && INSTALLED) {
-            LogUtils.e(INSTALLED + "333333333333333333");
+        if (constant.isAppInstalled(pkName)) {
+
             btn_download.setText("打开");
         }
 
@@ -821,7 +821,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                         Toast.makeText(mActivity, "网络异常，请重新下载！", Toast.LENGTH_SHORT).show();
 
                     }
-
                     @Override
                     public void onComplete() {
 

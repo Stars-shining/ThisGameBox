@@ -45,6 +45,9 @@ public class Constant {
     public static String GET_CONTACT = "game_box/api/get_box_info";
     public static String GET_BANNER = "game_box/api/get_banner";
     public static String DOWN_LOAD = "game_box/api/download";
+    public static String GAME_COUNT = "game_box/api/game_action";
+    public static String INSTALL_COUNT = "game_box/api/install";
+    public static String LAUNCH_COUNT = "game_box/api/launch";
     public static String CHECK_VERSION = "game_box/api/check_version";
     public static boolean INSTALLED = false;
     /*uuid。txt 文件*/

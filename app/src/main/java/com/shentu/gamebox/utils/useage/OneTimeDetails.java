@@ -1,4 +1,4 @@
-package com.shentu.gamebox.utils.usage;
+package com.shentu.gamebox.utils.useage;
 
 import android.annotation.TargetApi;
 import android.app.usage.UsageEvents;

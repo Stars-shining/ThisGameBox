@@ -12,6 +12,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.shentu.gamebox.R;
 import com.shentu.gamebox.bean.HomeItem;
+import com.shentu.gamebox.bean.RecGameBean;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,11 +26,10 @@ public class GameItemAdapter extends BaseQuickAdapter<HomeItem, BaseViewHolder> 
     private final int type;
 
     public GameItemAdapter(int LayoutResId, List<HomeItem> data, int type) {
-        super(R.layout.shouye_item,data);
+        super(LayoutResId,data);
         this.type = type;
+
     }
-
-
     @Override
     protected void convert(@NotNull BaseViewHolder holder, HomeItem homeItem) {
 
@@ -37,18 +37,17 @@ public class GameItemAdapter extends BaseQuickAdapter<HomeItem, BaseViewHolder> 
         holder.setText(R.id.firstpg_title,homeItem.getName());
         holder.setText(R.id.firstpg_intro,homeItem.getIntro());
         holder.setText(R.id.firstpg_open,homeItem.getOpen_time());
+        String gift = homeItem.getGift_detail();
+        String rebate = homeItem.getRebate();
+
 
         holder.setText(R.id.firstpg_detial_btn,"详情");
         holder.setBackgroundResource(R.id.firstpg_detial_btn,R.drawable.btn_shape);
 //        ImageView img = holder.findView(R.id.firstpg_min);
         ImageView img = holder.itemView.findViewById(R.id.firstpg_min);
-
         ImageView bigImg = holder.itemView.findViewById(R.id.rec_big_cover);
-
         ImageView reback = holder.itemView.findViewById(R.id.reback);
         ImageView welfare = holder.itemView.findViewById(R.id.welfare);
-        String gift = homeItem.getGift_detail();
-        String rebate = homeItem.getRebate();
 
         if (null!= gift && !gift.isEmpty()&& !"0".equals(gift)){
             welfare.setVisibility(View.VISIBLE);
