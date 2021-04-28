@@ -23,7 +23,7 @@ public class SharePreferenceUtil {
         } else if ("Float".equals(type)) {
             editor.putFloat(key, (Float) object);
         }
-        editor.commit();
+        editor.apply();
 
     }
 

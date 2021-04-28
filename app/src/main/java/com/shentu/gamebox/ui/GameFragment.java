@@ -48,9 +48,7 @@ import com.shentu.gamebox.bean.DownLoadBean;
 import com.shentu.gamebox.bean.HomeItem;
 import com.shentu.gamebox.bean.HttpResult;
 import com.shentu.gamebox.bean.VipBean;
-import com.shentu.gamebox.greendao.DaoSession;
-import com.shentu.gamebox.greendao.GameData;
-import com.shentu.gamebox.greendao.GameDataDao;
+
 import com.shentu.gamebox.http.ApiException;
 import com.shentu.gamebox.http.RetrofitManager;
 
@@ -97,6 +95,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.shentu.gamebox.utils.Constant.GAME_DETAIL;
 import static com.shentu.gamebox.utils.Constant.INSTALLED;
 
 public class GameFragment extends BaseFragment implements View.OnClickListener, Html.ImageGetter {
@@ -166,8 +165,8 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private MyIntentReceiver receiver;
     /*保存的包名*/
     private String pkName;
-    /*下载量*/
-    private int downLoadCount = 0;
+
+    private final String GAME_DOWNLOAD = "2";
 
     @Override
     protected int setView() {
@@ -246,9 +245,10 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
             btn_download.setText("打开");
         }
-
-
-        SaveGameInfo();
+        /*点击详情*/
+        /*統計點擊和下載*/
+        String GAME_CLICK = "1";
+        SendGameInfo(GAME_CLICK);
     }
 
 
@@ -296,37 +296,25 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     }
 
 
-    private void SaveGameInfo() {
-
-        String openTime = (String) SharePreferenceUtil.getParam(mActivity, "openTime", "");
-        BaseApplication instance = BaseApplication.getInstance();
-        DaoSession daoSession = instance.getDaoSession();
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = instance.getPackageManager().getPackageInfo(mActivity.getPackageName(), 0);
-            long firstInstallTime = packageInfo.firstInstallTime;
-            long lastUpdateTime = packageInfo.lastUpdateTime;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        GameData gameData = new GameData();
-
-        gameData.setAgent_code(agent_code);
-        if (openTime != null) {
-            gameData.setCurrentTiem(openTime);
-        }
-        gameData.setUUID(constant.readUUId());
-        if (gameId != null) {
-            gameData.setGameId(gameId);
-        }
-        if (type != null) {
-            gameData.setType(type);
-        }
-        gameData.setDownloadCount("0");
-
-        GameDataDao gameDataDao = daoSession.getGameDataDao();
-//        gameDataDao.insert(gameData);
+    private void SendGameInfo(String game_action) {
+        HashMap<String, Object> map = FieldMapUtils.getBoxGameInfoBody( gameId, agent_code, Constant.GAME_COUNT, game_action,"");
+        RetrofitManager.getInstance().GameClickCount(new Observer<HttpResult<Object>>() {
+            @Override
+            public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+            }
+            @Override
+            public void onNext(@io.reactivex.annotations.NonNull HttpResult<Object> objectHttpResult) {
+                int ret = objectHttpResult.getRet();
+                String msg = objectHttpResult.getMsg();
+                LogUtils.e(msg + ret);
+            }
+            @Override
+            public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+            }
+            @Override
+            public void onComplete() {
+            }
+        },map);
     }
 
     /*详情页*/
@@ -587,8 +575,9 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                         }
                     }
                 } else if (btn_download.getText().equals("下载")) {
-
-//                    downLoadCount++;
+                    /*下载统计*/
+                    SendGameInfo(GAME_DOWNLOAD);
+//
                     /*未安装 且安装包已存在 启动安装*/
                     if (downLoadfile != null && !INSTALLED){
                         UpdateVersion.installApk(mActivity, downLoadfile);
@@ -661,8 +650,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             }
         }
     }
-
-    ;
 
 
     private void storeApkInfo(File file) {
@@ -773,7 +760,8 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             public void onComplete() {
 
                 LogUtils.e(url);
-                if (!url.isEmpty()) {
+                LogUtils.e(msg);
+                if (null != url &&!url.isEmpty()) {
                     SharePreferenceUtil.setParam(mActivity, url, "url");
                     downFile(url);
                 } else {

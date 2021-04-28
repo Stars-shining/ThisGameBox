@@ -51,25 +51,25 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/game_box")
     Observable<HttpResult<GameBean<BannerBean>>> getBanner(@FieldMap Map<String, Object> map);
-
+    /*下载*/
     @FormUrlEncoded
     @POST("/game_box/down_url_a")
     Observable<HttpResult<DownLoadBean>> download(@FieldMap Map<String, Object> map);
-
+    /*版本检测*/
     @FormUrlEncoded
     @POST("/game_box")
     Observable<HttpResult<VersionBean>> checkVersion(@FieldMap Map<String, Object> map);
-
+    /*安装*/
     @FormUrlEncoded
-    @POST("/down_box/down_box")
+    @POST("/game_box")
     Observable<HttpResult<Object>> boxInstallCount(@FieldMap Map<String, Object> map);
 
+//    @FormUrlEncoded
+//    @POST("/game_box")
+//    Observable<HttpResult<Object>> boxStartCount(@FieldMap Map<String, Object> map);
+    /*点击*/
     @FormUrlEncoded
-    @POST("/down_box/down_box")
-    Observable<HttpResult<Object>> boxStartCount(@FieldMap Map<String, Object> map);
-
-    @FormUrlEncoded
-    @POST("/down_box/down_box")
+    @POST("/game_box")
     Observable<HttpResult<Object>> gameClickCount(@FieldMap Map<String, Object> map);
 
 

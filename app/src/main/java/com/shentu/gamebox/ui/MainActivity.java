@@ -1,18 +1,17 @@
 package com.shentu.gamebox.ui;
 
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -23,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -42,12 +40,8 @@ import com.shentu.gamebox.bean.BannerBean;
 import com.shentu.gamebox.bean.GameBean;
 import com.shentu.gamebox.bean.HomeItem;
 import com.shentu.gamebox.bean.HttpResult;
-import com.shentu.gamebox.bean.RecGameBean;
 import com.shentu.gamebox.bean.VersionBean;
-import com.shentu.gamebox.greendao.DaoMaster;
-import com.shentu.gamebox.greendao.DaoSession;
-import com.shentu.gamebox.greendao.GameData;
-import com.shentu.gamebox.greendao.GameDataDao;
+
 import com.shentu.gamebox.http.ApiException;
 import com.shentu.gamebox.http.RetrofitManager;
 import com.shentu.gamebox.base.BaseActivity;
@@ -58,13 +52,11 @@ import com.shentu.gamebox.utils.FieldMapUtils;
 import com.shentu.gamebox.utils.LogUtils;
 import com.shentu.gamebox.utils.Permission;
 import com.shentu.gamebox.utils.SharePreferenceUtil;
-import com.shentu.gamebox.view.CustomProgress;
 
 import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,15 +101,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private TextView rec_more;
     private ImageView firstpg_min;
     //热门&推荐游戏列表
-    @Keep
+
     private List<HomeItem> hotGameBeans;
-    @Keep
+
     private List<HomeItem> recGameBeans;
 
     //首次存放3条数据集合
-    @Keep
+
     private ArrayList<HomeItem> hotList;
-    @Keep
+
     private List<HomeItem> recList;
 
 
@@ -129,19 +121,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     private ImageView assistant;
     private ProgressBar update_progres;
     private View dialogView;
-    @Keep
+
     private Permission permission;
     private ConstraintLayout include_instro;
-    @Keep
+
     private int HOTTYPE = 1;
-    @Keep
+
     private int RECTYPE = 2;
-    @Keep
+
     private String hotType = "1";
-    @Keep
+
     private String recType = "2";
 
-    @Keep
+
     private String agentCode;
     private Disposable mDisposable;
     private ImageView rec_head_img;
@@ -155,6 +147,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     /*是否全部展开*/
     private boolean isUnfold = false;
+    private String uuId;
+    private final boolean isFirstStart = true;
+
+
     //    private LinearLayout rec_layout_parent;
 
 
@@ -220,15 +216,23 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         Constant constant = new Constant(this);
         agentCode = constant.getAgentCode();
-        permission = new Permission(this);
-
         /*保存设备标识*/
         constant.saveUniqueID();
-        /*保存首次开启时间*/
-        String openTime = (String) SharePreferenceUtil.getParam(this, "openTime", "");
-        if ( null!= openTime &&!openTime.isEmpty()){
-            SharePreferenceUtil.setParam(this,Constant.getCurrentTime(),"openTime");
+        uuId = constant.readUUId();
+        boolean first = (boolean) SharePreferenceUtil.getParam(this, "First", true);
+        if (first){
+            LogUtils.e("第一次开启");
+            SharePreferenceUtil.setParam(this,false,"First");
+            /*安装记录*/
+            postAppInstall(Constant.INSTALL_COUNT);
+        }else{
+            LogUtils.e("非第一次开启");
+             /*启动记录*/
+            postAppInstall(Constant.LAUNCH_COUNT);
         }
+
+        permission = new Permission(this);
+
         /*游戏列表*/
         gamesInfo(recType, agentCode);
         /*查看更多*/
@@ -238,6 +242,59 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         /*版本检测*/
         CheckVersionCode(agentCode);
+
+
+
+
+
+    }
+
+
+
+    private void postAppInstall(String action) {
+
+//        BaseApplication instance = BaseApplication.getInstance();
+//        int firstInstallTime = 0;
+//        try {
+//            PackageInfo packageInfo = instance.getPackageManager().getPackageInfo(getPackageName(), 0);
+//            firstInstallTime = (int) packageInfo.firstInstallTime;
+//            long lastUpdateTime = packageInfo.lastUpdateTime;
+//        } catch (PackageManager.NameNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        boxInstallDao boxInstallDao = instance.getDaoSession().getBoxInstallDao();
+//        boxInstall boxInstall = new boxInstall();
+//        boxInstall.setAdd_time(firstInstallTime);
+//        boxInstall.setAgent_code(agentCode);
+//        boxInstall.setImei(uuId);
+//        boxInstallDao.insert(boxInstall);
+        /*params参数 1、agent_code  2、uuid */
+        HashMap<String, Object> map = FieldMapUtils.getBoxGameInfoBody("", agentCode, action, "", uuId);
+
+        RetrofitManager.getInstance().BoxinstallCount(new Observer<HttpResult<Object>>() {
+            @Override
+            public void onSubscribe(@io.reactivex.annotations.NonNull Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(@io.reactivex.annotations.NonNull HttpResult<Object> objectHttpResult) {
+                int ret = objectHttpResult.getRet();
+                String msg = objectHttpResult.getMsg();
+                LogUtils.e(msg + ret);
+            }
+
+            @Override
+            public void onError(@io.reactivex.annotations.NonNull Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        }, map);
+
     }
 
     private void gamesInfo(String type, String agent_code) {
@@ -246,29 +303,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         recList = new ArrayList<>();
 
         HashMap<String, Object> map = FieldMapUtils.getRequestBody(type, "", agent_code, Constant.GET_GAMES, "");
-        if (type.equals("2")){
+        if (type.equals("2")) {
             //推荐游戏
             requestRecGames(map);
 
-        }else{
+        } else {
             //热门版本
             requestHotGames(map);
         }
-
-
-
-
-
-
-
-
-
 
     }
 
     /*请求网络获取games数据*/
 
-    public void requestHotGames(HashMap<String,Object> map) {
+    public void requestHotGames(HashMap<String, Object> map) {
 //        RequestBody requestBody = getRequestBody();
         RetrofitManager.getInstance().GameListInfo(new Observer<HttpResult<GameBean<HomeItem>>>() {
             @Override
@@ -289,21 +337,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //                ApiException apiException = (ApiException) e;
 //                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
             }
+
             @Override
             public void onComplete() {
                 /*首次加载显示3条*/
                 if (hotGameBeans != null && hotGameBeans.size() != 0) {
                     hot_txt.setText("热门版本");
-                    if (hotGameBeans.size() > 3 ) {
-                        if (isUnfold){
+                    if (hotGameBeans.size() > 3) {
+                        if (isUnfold) {
                             hot_more.setVisibility(View.VISIBLE);
                             hotList.addAll(hotGameBeans.subList(0, 3));
                             /*填充recyclerview*/
                             setRecyclerView(hot_recycle, hotList, HOTTYPE);
-                        }else{
+                        } else {
                             setRecyclerView(hot_recycle, hotGameBeans, HOTTYPE);
                         }
-                    } else  {
+                    } else {
 //                        hot_more.setVisibility(View.GONE);
                         setRecyclerView(hot_recycle, hotGameBeans, HOTTYPE);
                     }
@@ -315,7 +364,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
     }
-    public void requestRecGames(HashMap<String,Object> map) {
+
+    public void requestRecGames(HashMap<String, Object> map) {
 //        RequestBody requestBody = getRequestBody();
         RetrofitManager.getInstance().GameListInfo(new Observer<HttpResult<GameBean<HomeItem>>>() {
             @Override
@@ -328,9 +378,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 //获取game数据
                 GameBean<HomeItem> data = gameBeanHttpResult.getData();
                 recGameBeans = data.getList();
-                if (null != recGameBeans&& recGameBeans.size() != 0){
+                if (null != recGameBeans && recGameBeans.size() != 0) {
                     isUnfold = true;
-                }else{
+                } else {
                     isUnfold = false;
                 }
             }
@@ -341,10 +391,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //                ApiException apiException = (ApiException) e;
 //                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
             }
+
             @Override
             public void onComplete() {
                 /*首次加载显示3条*/
-                if (recGameBeans != null  && recGameBeans.size() != 0) {
+                if (recGameBeans != null && recGameBeans.size() != 0) {
                     rec_txt.setText("推荐游戏");
                     if (recGameBeans.size() > 3 && hotGameBeans.size() != 0) {
                         recList.addAll(recGameBeans.subList(0, 3));
@@ -553,7 +604,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     alertDialog.show();
 
 
-
                     updateBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -612,9 +662,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     @Override
                     public void onNext(@io.reactivex.annotations.NonNull Integer integer) {
                         //设置progressdialog 进度条进度
-                        int t =  (int) (downloadLength * 1.0f / contentLength * 100);
+                        int t = (int) (downloadLength * 1.0f / contentLength * 100);
                         dialog.setProgress(t);
-                        if (downloadLength == contentLength){
+                        if (downloadLength == contentLength) {
                             dialog.dismiss();
                         }
                     }

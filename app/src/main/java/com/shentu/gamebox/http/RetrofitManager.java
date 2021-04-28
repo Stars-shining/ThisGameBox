@@ -150,22 +150,22 @@ public class RetrofitManager {
     }
 
     /*游戏计数  map  params参数 1、agent_code  2、game_id 3、game_action*/
-    public void GameClickCount(Observer<HttpResult<VersionBean>> observer, HashMap<String, Object> map) {
-        getApiService().checkVersion(map).subscribeOn(Schedulers.io())
+    public void GameClickCount(Observer<HttpResult<Object>> observer, HashMap<String, Object> map) {
+        getApiService().gameClickCount(map).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }
 
-    /*启动计数  map  params参数 1、agent_code  2、uuid*/
-    public void BoxStartCount(Observer<HttpResult<VersionBean>> observer, HashMap<String, Object> map) {
-        getApiService().checkVersion(map).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(observer);
-    }
+//    /*启动计数  map  params参数 1、agent_code  2、uuid*/
+//    public void BoxStartCount(Observer<HttpResult<Object>> observer, HashMap<String, Object> map) {
+//        getApiService().boxStartCount(map).subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(observer);
+//    }
 
     /*安装计数   map  params参数 1、agent_code  2、uuid */
-    public void BoxinstallCount(Observer<HttpResult<VersionBean>> observer, HashMap<String, Object> map) {
-        getApiService().checkVersion(map).subscribeOn(Schedulers.io())
+    public void BoxinstallCount(Observer<HttpResult<Object>> observer, HashMap<String, Object> map) {
+        getApiService().boxInstallCount(map).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }

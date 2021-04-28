@@ -152,8 +152,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation 'org.greenrobot:greendao:3.3.0'
-    implementation 'org.greenrobot:greendao-generator:3.3.0'
+//    implementation 'org.greenrobot:greendao:3.3.0'
+//    implementation 'org.greenrobot:greendao-generator:3.3.0'
 //    implementation 'org.jsoup:jsoup:1.13.1'
     //MultiDex分包方法
     implementation'androidx.multidex:multidex:2.0.1'
@@ -178,6 +178,5 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.0.0'
 
     implementation 'cn.jzvd:jiaozivideoplayer:7.5.0'
-    /*在线查看数据库框架*/
-    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
+
 }
