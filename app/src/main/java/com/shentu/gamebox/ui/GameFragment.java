@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
@@ -74,6 +76,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -103,7 +106,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private ViewPager viewpager;
     private TabLayout tablayout;
     private ArrayList<Fragment> fragments;
-    private static final String tag = "args";
+    private static final String tag = "gameFragment";
     private String mTag;
     private boolean needIntercept = false;
     int mLastXIntercept = 0;
@@ -167,6 +170,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     private String pkName;
 
     private final String GAME_DOWNLOAD = "2";
+
 
     @Override
     protected int setView() {
@@ -246,9 +250,9 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             btn_download.setText("打开");
         }
         /*点击详情*/
-        /*統計點擊和下載*/
-        String GAME_CLICK = "1";
-        SendGameInfo(GAME_CLICK);
+//        /*統計點擊和下載*/
+//        String GAME_CLICK = "1";
+//        SendGameInfo(GAME_CLICK);
     }
 
 
@@ -256,9 +260,19 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         videoView.setUp(uri, "", Jzvd.SCREEN_NORMAL);
         JzvdStd.SAVE_PROGRESS = false;
         Glide.with(mActivity).load(cover).into(videoView.posterImageView);
+        videoView.showVolumeDialog(0,0);
+        videoView.dismissVolumeDialog();
         videoView.startVideo();
         LogUtils.e("播放视频");
     }
+
+    public JzvdStd getVideoView(){
+        if (videoView != null){
+            return videoView;
+        }
+        return null;
+    }
+
 
     @Override
     public void onPause() {
@@ -577,7 +591,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                 } else if (btn_download.getText().equals("下载")) {
                     /*下载统计*/
                     SendGameInfo(GAME_DOWNLOAD);
-//
                     /*未安装 且安装包已存在 启动安装*/
                     if (downLoadfile != null && !INSTALLED){
                         UpdateVersion.installApk(mActivity, downLoadfile);
@@ -924,6 +937,11 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             return uri.getPath();
         }
         return null;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
     }
 
     @Override

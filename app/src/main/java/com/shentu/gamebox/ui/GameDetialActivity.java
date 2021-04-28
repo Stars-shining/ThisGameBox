@@ -1,10 +1,13 @@
 package com.shentu.gamebox.ui;
 
+import android.content.Context;
 import android.content.res.Configuration;
+import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -14,6 +17,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 
 import com.shentu.gamebox.R;
@@ -21,6 +27,7 @@ import com.shentu.gamebox.R;
 import com.shentu.gamebox.base.BaseActivity;
 import com.shentu.gamebox.bean.BannerBean;
 import com.shentu.gamebox.bean.HomeItem;
+
 import com.shentu.gamebox.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -28,6 +35,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.Serializable;
 
 import cn.jzvd.Jzvd;
+import cn.jzvd.JzvdStd;
 
 
 public class GameDetialActivity extends BaseActivity implements View.OnClickListener {
@@ -39,6 +47,7 @@ public class GameDetialActivity extends BaseActivity implements View.OnClickList
     private BannerBean bannerBean;
     private String type;
     private Bundle bundleMain;
+    private int volume;
 
 
     @Override
@@ -73,19 +82,40 @@ public class GameDetialActivity extends BaseActivity implements View.OnClickList
 
     @Override
     protected void initData() {
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("homeItem", homeItem);
-//        bundle.putSerializable("bannerBean", bannerBean);
-//        bundle.putString("type",type);
-//        /*发送 banner 和 homeItem 对象*/
-//        EventBus.getDefault().postSticky(bundleMain);
+
         GameFragment gameFragment = new GameFragment();
-//        gameFragment.setArguments(bundleMain);
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(R.id.gamedesc_layout, gameFragment)
                 .commit();
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (event.getAction()) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+
+                break;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                FragmentManager manager = getSupportFragmentManager();
+                GameFragment gameFragment = (GameFragment) manager.findFragmentByTag("gameFragment");
+                JzvdStd videoView = gameFragment.getVideoView();
+                LogUtils.e("555555");
+                if (videoView != null)
+                videoView.showVolumeDialog(20,volume);
+                videoView.dismissVolumeDialog();
+                break;
+
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                break;
+
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -117,7 +147,7 @@ public class GameDetialActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onBackPressed() {
-        if (Jzvd.backPress()){
+        if (Jzvd.backPress()) {
             return;
         }
 

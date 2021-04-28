@@ -3,9 +3,7 @@ package com.shentu.gamebox.ui;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.database.sqlite.SQLiteDatabase;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -220,16 +218,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         constant.saveUniqueID();
         uuId = constant.readUUId();
         boolean first = (boolean) SharePreferenceUtil.getParam(this, "First", true);
-        if (first){
-            LogUtils.e("第一次开启");
-            SharePreferenceUtil.setParam(this,false,"First");
-            /*安装记录*/
-            postAppInstall(Constant.INSTALL_COUNT);
-        }else{
-            LogUtils.e("非第一次开启");
-             /*启动记录*/
-            postAppInstall(Constant.LAUNCH_COUNT);
-        }
+//        if (first){
+//            LogUtils.e("第一次开启");
+//            SharePreferenceUtil.setParam(this,false,"First");
+//            /*安装记录*/
+//            postAppInstall(Constant.INSTALL_COUNT);
+//        }else{
+//            LogUtils.e("非第一次开启");
+//             /*启动记录*/
+//            postAppInstall(Constant.LAUNCH_COUNT);
+//        }
 
         permission = new Permission(this);
 
@@ -242,10 +240,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
         /*版本检测*/
         CheckVersionCode(agentCode);
-
-
-
-
 
     }
 
