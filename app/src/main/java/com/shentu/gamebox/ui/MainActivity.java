@@ -200,16 +200,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         constant.saveUniqueID();
         uuId = constant.readUUId();
         boolean first = (boolean) SharePreferenceUtil.getParam(this, "First", true);
-//        if (first){
-//            LogUtils.e("第一次开启");
-//            SharePreferenceUtil.setParam(this,false,"First");
-//            /*安装记录*/
-//            postAppInstall(Constant.INSTALL_COUNT);
-//        }else{
-//            LogUtils.e("非第一次开启");
-//             /*启动记录*/
-//            postAppInstall(Constant.LAUNCH_COUNT);
-//        }
+        if (first){
+            LogUtils.e("第一次开启");
+            SharePreferenceUtil.setParam(this,false,"First");
+            /*安装记录*/
+            postAppInstall(Constant.INSTALL_COUNT);
+        }else{
+            LogUtils.e("非第一次开启");
+             /*启动记录*/
+            postAppInstall(Constant.LAUNCH_COUNT);
+        }
 
         permission = new Permission(this);
 

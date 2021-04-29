@@ -247,9 +247,9 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             btn_download.setText("打开");
         }
         /*点击详情*/
-//        /*統計點擊和下載*/
-//        String GAME_CLICK = "1";
-//        SendGameInfo(GAME_CLICK);
+        /*統計點擊和下載*/
+        String GAME_CLICK = "1";
+        SendGameInfo(GAME_CLICK);
     }
 
 
