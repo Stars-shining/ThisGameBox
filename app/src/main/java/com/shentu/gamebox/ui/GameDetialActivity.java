@@ -74,8 +74,7 @@ public class GameDetialActivity extends BaseActivity implements View.OnClickList
                 .beginTransaction()
                 .add(R.id.gamedesc_layout, gameFragment)
                 .commit();
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
 
     }
 
@@ -86,12 +85,14 @@ public class GameDetialActivity extends BaseActivity implements View.OnClickList
 
                 break;
             case KeyEvent.KEYCODE_VOLUME_UP:
+                AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                volume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                 FragmentManager manager = getSupportFragmentManager();
                 GameFragment gameFragment = (GameFragment) manager.findFragmentByTag("gameFragment");
                 JzvdStd videoView = gameFragment.getVideoView();
                 LogUtils.e("555555");
                 if (videoView != null)
-                videoView.showVolumeDialog(20,volume);
+                    videoView.showVolumeDialog(20, volume);
                 videoView.dismissVolumeDialog();
                 break;
 

@@ -257,9 +257,9 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         videoView.setUp(uri, "", Jzvd.SCREEN_NORMAL);
         JzvdStd.SAVE_PROGRESS = false;
         Glide.with(mActivity).load(cover).into(videoView.posterImageView);
+        videoView.startVideo();
         videoView.showVolumeDialog(0,0);
         videoView.dismissVolumeDialog();
-        videoView.startVideo();
         LogUtils.e("播放视频");
     }
 
@@ -535,13 +535,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             }
         });
 
-//        tablayout.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                /*设置tab指示条样式*/
-//                Indicator.setIndicator(tablayout, 13, 13, ContextCompat.getColor(mActivity, R.color.btnBg));
-//            }
-//        });
     }
 
     @Override
@@ -554,6 +547,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
                 if ( btn_download.getText().equals("打开")) {
                     //进行跳转
+                    LogUtils.e(isValuable(mActivity,pkName) + " 是否安装了");
                     /*包名不为空并且安装了*/
                     if (constant.isAppInstalled(pkName) ){
                     try {

@@ -2,7 +2,7 @@
 plugins {
     id 'com.android.application'
 }
-apply plugin: 'org.greenrobot.greendao'
+//apply plugin: 'org.greenrobot.greendao'
 /*
 *定义方法 返回类型任意（自动判断）
 *String 或 def String
@@ -125,11 +125,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    greendao {
-        schemaVersion 1
-        daoPackage 'com.shentu.gamebox.greendao'
-        targetGenDir 'src/main/java'
-    }
+//    greendao {
+//        schemaVersion 1
+//        daoPackage 'com.shentu.gamebox.greendao'
+//        targetGenDir 'src/main/java'
+//    }
 }
 
 dependencies {

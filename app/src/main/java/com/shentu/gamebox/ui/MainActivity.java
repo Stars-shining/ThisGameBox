@@ -32,7 +32,6 @@ import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.shentu.gamebox.R;
 import com.shentu.gamebox.adapter.GameItemAdapter;
-import com.shentu.gamebox.base.BaseApplication;
 import com.shentu.gamebox.bean.AssistantBean;
 import com.shentu.gamebox.bean.BannerBean;
 import com.shentu.gamebox.bean.GameBean;
@@ -88,8 +87,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     /*列表*/
     private RecyclerView hot_recycle;
     private RecyclerView rec_recycle;
-    /*大图详情btn*/
-    private Button firstp_detial_btn;
 
     /*游戏文字介绍*/
     private TextView firstpg_title;
@@ -178,7 +175,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         rec_txt = rec_list.findViewById(R.id.firstpg_txt);
         rec_recycle = rec_list.findViewById(R.id.xq_recycleview);
         /*头部子布局*/
-        firstp_detial_btn = findViewById(R.id.firstpg_detial_btn);
         firstpg_title = findViewById(R.id.head_title);
         firstpg_intro = findViewById(R.id.head_intro);
 //        firstpg_start = findViewById(R.id.firstpg_open);
@@ -477,7 +473,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 setRecyclerView(rec_recycle, recGameBeans, RECTYPE);
-                gameAdapter.notifyDataSetChanged();
+//                gameAdapter.notifyDataSetChanged();
                 v.setVisibility(View.GONE);
 
 
@@ -489,11 +485,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 List<HomeItem> homeItems = hotGameBeans.subList(0, 3);
                 if (hot_more.getText().equals("收起")) {
                     setRecyclerView(hot_recycle, homeItems, HOTTYPE);
-                    gameAdapter.notifyDataSetChanged();
+//                    gameAdapter.notifyDataSetChanged();
                     hot_more.setText("查看更多");
                 } else {
                     setRecyclerView(hot_recycle, hotGameBeans, HOTTYPE);
-                    gameAdapter.notifyDataSetChanged();
+//                    gameAdapter.notifyDataSetChanged();
                     hot_more.setText("收起");
                 }
 
@@ -572,7 +568,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                     updateBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            permission.initPermission();
+//                            permission.initPermission();
 
                             /*下载文件*/
                             if (!url.isEmpty()) {
@@ -737,22 +733,22 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         view.setHasFixedSize(true);
         view.setAdapter(gameAdapter);
         gameAdapter.addChildClickViewIds(R.id.firstpg_detial_btn);
+        gameAdapter.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(@NonNull BaseQuickAdapter<?, ?> adapter, @NonNull View view, int position) {
+                HomeItem homeItem = list.get(position);
+                startGameActivity(type,homeItem);
+            }
+        });
         gameAdapter.setOnItemChildClickListener(new OnItemChildClickListener() {
             @Override
             public void onItemChildClick(@NonNull BaseQuickAdapter adapter, @NonNull View view, int position) {
-
                 HomeItem homeItem = list.get(position);
-                Bundle bundle = new Bundle();
-                LogUtils.e(type + "");
-                bundle.putInt("type", type);
-                bundle.putSerializable("homeItem", homeItem);
-                EventBus.getDefault().postSticky(bundle);
-
-                if (view.getId() == R.id.firstpg_detial_btn) {
-                    startGameActivity();
-                }
+                startGameActivity(type,homeItem);
+                LogUtils.e("点击了");
             }
         });
+
         /*滑动不加载图片*/
         view.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -768,7 +764,12 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
 
     /*跳转详情页*/
-    private void startGameActivity() {
+    private void startGameActivity(int type, HomeItem homeItem) {
+        Bundle bundle = new Bundle();
+        LogUtils.e(type + "");
+        bundle.putInt("type", type);
+        bundle.putSerializable("homeItem", homeItem);
+        EventBus.getDefault().postSticky(bundle);
         Intent intent = new Intent(this, GameDetialActivity.class);
         startActivity(intent);
     }
@@ -778,7 +779,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.assistant:
-                /*弹出框*/
+                /*客服弹出框*/
                 Constant constant = new Constant(MainActivity.this);
                 String code = constant.getAgentCode();
                 requestAssistant(code);

@@ -28,7 +28,6 @@ public class GameItemAdapter extends BaseQuickAdapter<HomeItem, BaseViewHolder> 
     public GameItemAdapter(int LayoutResId, List<HomeItem> data, int type) {
         super(LayoutResId,data);
         this.type = type;
-
     }
     @Override
     protected void convert(@NotNull BaseViewHolder holder, HomeItem homeItem) {
