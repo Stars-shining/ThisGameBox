@@ -12,7 +12,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.shentu.gamebox.R;
 import com.shentu.gamebox.bean.HomeItem;
-import com.shentu.gamebox.bean.RecGameBean;
+
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

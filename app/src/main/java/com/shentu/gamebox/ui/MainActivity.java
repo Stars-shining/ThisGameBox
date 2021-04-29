@@ -157,21 +157,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         return R.layout.activity_home;
     }
 
-    @Override
-    protected void setTitle() {
-        //隐藏actionbanr
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getSupportActionBar().hide();
 
-//        ActionBar actionBar = getSupportActionBar();
-////        actionBar.hide();
-//        assert actionBar != null;
-//        View view = LayoutInflater.from(this).inflate(R.layout.action_title, null);
-//        TextView title = view.findViewById(R.id.detial_title);
-//        title.setText("游戏盒子");
-//        actionBar.setCustomView(view);
-//        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-    }
 
     @Override
     protected void initView() {
@@ -247,21 +233,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     private void postAppInstall(String action) {
 
-//        BaseApplication instance = BaseApplication.getInstance();
-//        int firstInstallTime = 0;
-//        try {
-//            PackageInfo packageInfo = instance.getPackageManager().getPackageInfo(getPackageName(), 0);
-//            firstInstallTime = (int) packageInfo.firstInstallTime;
-//            long lastUpdateTime = packageInfo.lastUpdateTime;
-//        } catch (PackageManager.NameNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        boxInstallDao boxInstallDao = instance.getDaoSession().getBoxInstallDao();
-//        boxInstall boxInstall = new boxInstall();
-//        boxInstall.setAdd_time(firstInstallTime);
-//        boxInstall.setAgent_code(agentCode);
-//        boxInstall.setImei(uuId);
-//        boxInstallDao.insert(boxInstall);
         /*params参数 1、agent_code  2、uuid */
         HashMap<String, Object> map = FieldMapUtils.getBoxGameInfoBody("", agentCode, action, "", uuId);
 
@@ -327,9 +298,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-//                LogUtils.e(e.toString());
-//                ApiException apiException = (ApiException) e;
-//                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
+
+                ApiException apiException = (ApiException) e;
+                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
             }
 
             @Override
@@ -381,9 +352,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-//                LogUtils.e(e.toString());
-//                ApiException apiException = (ApiException) e;
-//                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
+
+                ApiException apiException = (ApiException) e;
+                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
             }
 
             @Override
@@ -426,8 +397,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-//                ApiException apiException = (ApiException) e;
-//                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
+                ApiException apiException = (ApiException) e;
+                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
             }
 
             @Override
@@ -766,18 +737,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         view.setHasFixedSize(true);
         view.setAdapter(gameAdapter);
         gameAdapter.addChildClickViewIds(R.id.firstpg_detial_btn);
-        gameAdapter.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(@NonNull BaseQuickAdapter<?, ?> adapter, @NonNull View view, int position) {
-                HomeItem homeItem = list.get(position);
-                Bundle bundle = new Bundle();
-                LogUtils.e(type + "");
-                bundle.putInt("type", type);
-                bundle.putSerializable("homeItem", homeItem);
-                EventBus.getDefault().postSticky(bundle);
-                startGameActivity();
-            }
-        });
         gameAdapter.setOnItemChildClickListener(new OnItemChildClickListener() {
             @Override
             public void onItemChildClick(@NonNull BaseQuickAdapter adapter, @NonNull View view, int position) {

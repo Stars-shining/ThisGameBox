@@ -56,21 +56,6 @@ public class GameDetialActivity extends BaseActivity implements View.OnClickList
 
     }
 
-    @Override
-    protected void setTitle() {
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.hide();
-//        assert actionBar != null;
-//        actionBar.setDisplayShowCustomEnabled(true);
-//        View view = LayoutInflater.from(this).inflate(R.layout.action_title, null);
-//        TextView title = view.findViewById(R.id.detial_title);
-//        back = view.findViewById(R.id.back_home);
-//        title.setText("游戏详情");
-//        actionBar.setCustomView(view,new ActionBar.LayoutParams(ActionBar.LayoutParams.MATCH_PARENT
-//        ,ActionBar.LayoutParams.MATCH_PARENT));
-
-//        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-    }
 
     @Override
     protected void initView() {

@@ -40,9 +40,7 @@ import com.bumptech.glide.request.RequestOptions;
 
 import com.google.android.material.tabs.TabLayout;
 import com.shentu.gamebox.R;
-import com.shentu.gamebox.adapter.TabFragmentAdapter;
-import com.shentu.gamebox.adapter.myTabViewAdapter;
-import com.shentu.gamebox.base.BaseApplication;
+
 import com.shentu.gamebox.bean.BannerBean;
 import com.shentu.gamebox.bean.DetailBean;
 import com.shentu.gamebox.bean.DetialGameBean;
@@ -142,8 +140,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
     /*总进度 下载进度*/
     private long downloadLength;
     private long contentLength;
-    private myTabViewAdapter tabAdapter;
-    private TabFragmentAdapter tabFragmentAdapter;
+
     /*textview显示的最大行数*/
     private int maxline = 5;
     //    private MmediaController mmediaController;
@@ -444,9 +441,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         Fragment priceFragment = PriceFragment.newInstance("price");
         Fragment imageFragment = ImageFragment.newInstance("image");
 
-//        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-//        transaction.replace(R.id.tab_fragment,openareaFragment);
-//        transaction.commit();
+
         ArrayList<String> strtab = new ArrayList<>();
         fragments = new ArrayList<>();
         strtab.clear();
@@ -474,9 +469,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         fm.commit();
         TabLayout.Tab tabAt = tablayout.getTabAt(0);
 
-//        fm.hide(imageFragment);
-//        fm.hide(priceFragment);
-//        fm.hide(openareaFragment);
+
 
         if (tabAt.isSelected() && tabAt.getText().equals("游戏截图")) {
 
@@ -496,19 +489,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             fragment_tab3.setVisibility(View.VISIBLE);
         }
 
-//        tabFragmentAdapter = new TabFragmentAdapter(mActivity.getSupportFragmentManager(), getLifecycle(), fragments);
-//        FragmentManager fm =getChildFragmentManager();
-//        mViewPagerAdapter mViewPagerAdapter = new mViewPagerAdapter(fm, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,fragments);
-//        viewpager.setAdapter(mViewPagerAdapter);
-//        viewpager.setOffscreenPageLimit(fragments.size());
-//        viewpager.setCurrentItem(0);
-//        tablayout.setupWithViewPager(viewpager);
-//        new TabLayoutMediator(tablayout, viewpager, new TabLayoutMediator.TabConfigurationStrategy() {
-//            @Override
-//            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-//                tab.setText(strtab.get(position));
-//            }
-//        }).attach();
+
 
         tablayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -693,40 +674,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         return "<html>" + head + "<body>" + bodyHTML + "</body></html>";
     }
 
-    public void showGiftImage() {
-        Uri uri = null;
-        LogUtils.e(gift_detail);
-        Intent intent = new Intent(mActivity, WebViewActivity.class);
 
-        if (!gift_detail.isEmpty() && gift_detail.contains("src")) {
-            Matcher matcher = Pattern.compile("\"http?(.*?)(\"|\\s+)").matcher(gift_detail);
-            boolean b = matcher.find();
-            if (b) {
-                String group = matcher.group();
-                LogUtils.e(group);
-                String substring = group.substring(1, group.length() - 1);
-                uri = Uri.parse(substring);
-
-            }
-        } else if (!gift_detail.isEmpty()) {
-
-            uri = Uri.parse(gift_detail);
-
-        }
-        if (uri != null) {
-
-            Bundle bundle = new Bundle();
-            bundle.putString("uri", String.valueOf(uri));
-            intent.putExtras(bundle);
-            startActivity(intent);
-        } else {
-
-            Bundle bundle = new Bundle();
-            bundle.putString("uri", gift_detail);
-            intent.putExtras(bundle);
-            startActivity(intent);
-        }
-    }
 
     private boolean isValuable(Context context, String packageName) {
         PackageManager packageManager = context.getPackageManager();
@@ -764,8 +712,8 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
             @Override
             public void onError(@io.reactivex.annotations.NonNull Throwable e) {
-//                ApiException apiException = (ApiException) e;
-//                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
+                ApiException apiException = (ApiException) e;
+                LogUtils.e(apiException.getCode() + apiException.getDispalyMessage());
 //                com.jakewharton.retrofit2.adapter.rxjava2.HttpException cannot be cast to
             }
 

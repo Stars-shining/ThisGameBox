@@ -5,12 +5,12 @@ import androidx.annotation.Keep;
 import com.shentu.gamebox.bean.AssistantBean;
 import com.shentu.gamebox.bean.BannerBean;
 import com.shentu.gamebox.bean.DetailBean;
-import com.shentu.gamebox.bean.DetialGameBean;
+
 import com.shentu.gamebox.bean.DownLoadBean;
 import com.shentu.gamebox.bean.GameBean;
 import com.shentu.gamebox.bean.HomeItem;
 import com.shentu.gamebox.bean.HttpResult;
-import com.shentu.gamebox.bean.RecGameBean;
+
 import com.shentu.gamebox.bean.VersionBean;
 
 import java.util.Map;
@@ -41,7 +41,6 @@ public interface ApiService {
 //    @POST("/game_box")
 //    Observable<HttpResult<GameBean<RecGameBean>>> getRecGameList(@FieldMap Map<String, Object> map);
 //
-
     /*客服*/
     @FormUrlEncoded
     @POST("/game_box")

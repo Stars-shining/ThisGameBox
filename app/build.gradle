@@ -15,7 +15,6 @@ apply plugin: 'org.greenrobot.greendao'
 * gradlew assembleRelease
 * gradlew installRelease Release
 * gradlew uninstallRelease
-*
 *  --stacktrace -info
 * */
 
@@ -33,6 +32,7 @@ def releaseTime(){
 }
 
 android {
+    /*lint检查 避免lint检测到不符合条件 退出编译*/
     lintOptions {
         checkReleaseBuilds false
         abortOnError false
@@ -120,7 +120,6 @@ android {
 
     }
 
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -131,12 +130,6 @@ android {
         daoPackage 'com.shentu.gamebox.greendao'
         targetGenDir 'src/main/java'
     }
-
-    /*lint检查 避免lint检测到不符合条件 退出编译*/
-//    lintOptions {
-//        abortOnError false
-//    }
-
 }
 
 dependencies {

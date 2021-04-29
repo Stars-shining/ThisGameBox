@@ -18,7 +18,6 @@ public abstract class BaseActivity  extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle();
         setContentView(initLayoutId());
         /*设置状态栏*/
         SetStatusBarColor barColor = new SetStatusBarColor(this);
@@ -27,8 +26,6 @@ public abstract class BaseActivity  extends AppCompatActivity {
 
         initData();
     }
-
-    protected abstract void setTitle();
 
     /*初始化view*/
     protected abstract void initView();

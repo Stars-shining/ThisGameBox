@@ -3,7 +3,7 @@ package com.shentu.gamebox.utils;
 import com.alibaba.fastjson.JSON;
 import com.shentu.gamebox.bean.GameInfoBean;
 import com.shentu.gamebox.bean.ParamBean;
-import com.shentu.gamebox.bean.ServiceBean;
+
 
 import java.util.HashMap;
 
@@ -21,7 +21,7 @@ public class FieldMapUtils {
 
     public static HashMap<String, Object> getRequestBody(String type, String gameId, String agent_code, String action, String name, String version) {
 
-        ServiceBean serviceBean = new ServiceBean();
+
         ParamBean paramBean = new ParamBean();
         String t = Constant.getCurrentTime();
 //        String t = "2021-04-06 16:45";

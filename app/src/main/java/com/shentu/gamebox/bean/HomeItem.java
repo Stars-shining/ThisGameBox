@@ -7,8 +7,6 @@ import java.io.Serializable;
 @Keep
 public class HomeItem implements Serializable {
 
-
-
     private String id;
     private String name;
     private String icon;
