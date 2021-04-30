@@ -108,12 +108,10 @@ public class CrashHandlerUtils implements Thread.UncaughtExceptionHandler {
                     mDefaultHandler.uncaughtException(thread, ex);
                 }
             } else {
-
 //                /*退出jvm java虚拟机 释放内存 非零都是异常退出*/
 //                System.exit(0);
 //                // 退出程序
 //                android.os.Process.killProcess(android.os.Process.myPid());
-
             }
         }
 
@@ -147,14 +145,11 @@ public class CrashHandlerUtils implements Thread.UncaughtExceptionHandler {
             return true;
         }
 
-        private void setToServer(File file) {
-
-            if (file != null){
-            RequestBody requestBody = RequestBody.create(MediaType.parse("application/otcet-stream"), file);
-            MultipartBody.Part body = MultipartBody.Part.createFormData("crashLogFile",file.getName(),requestBody);
-            String descriptionString = "crashLog";
-            RequestBody description = RequestBody.create(MediaType.parse("text/plain"), descriptionString);
-            Call<ResponseBody> call = RetrofitManager.getApiService().uploadFile(description, body);
+        public void setToServer(File file) {
+            RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"), file);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("file",file.getName(),requestBody);
+            RequestBody description = RequestBody.create(MediaType.parse("text/plain"), file);
+            Call<ResponseBody> call = RetrofitManager.getApiService().uploadFile(description,body);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -167,7 +162,7 @@ public class CrashHandlerUtils implements Thread.UncaughtExceptionHandler {
                 }
             });
             }
-        }
+
 
         /**
          * 收集设备参数信息

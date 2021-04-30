@@ -36,7 +36,7 @@ public class DialogUtils {
 
         WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
         float scale = context.getResources().getDisplayMetrics().density;
-        lp.height = (int) (90 * scale / 0.5f);
+        lp.height = (int) (100 * scale / 0.5f);
         lp.width = (int) (150 * scale / 0.5f);
         alertDialog.getWindow().setAttributes(lp);
         ImageView closeImg = v.findViewById(R.id.close);

@@ -78,6 +78,6 @@ public interface ApiService {
 
     @Multipart
     @POST("/game_box/error_msg")
-    Call<ResponseBody> uploadFile(@Part("deacription") RequestBody requestBody, @Part MultipartBody.Part  multipartBody);
+    Call<ResponseBody> uploadFile(@Part("file") RequestBody requestBody, @Part MultipartBody.Part  multipartBody);
 
 }

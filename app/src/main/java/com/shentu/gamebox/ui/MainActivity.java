@@ -6,8 +6,10 @@ import android.content.Intent;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextPaint;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -44,6 +46,7 @@ import com.shentu.gamebox.http.RetrofitManager;
 import com.shentu.gamebox.base.BaseActivity;
 import com.shentu.gamebox.http.UpdateVersion;
 import com.shentu.gamebox.utils.Constant;
+import com.shentu.gamebox.utils.CrashHandlerUtils;
 import com.shentu.gamebox.utils.DialogUtils;
 import com.shentu.gamebox.utils.FieldMapUtils;
 import com.shentu.gamebox.utils.LogUtils;
@@ -193,12 +196,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void initData() {
+//        String ss = "测试是否发送成功";
+//        CrashHandlerUtils.getInstance().setToServer(ss);
 
         Constant constant = new Constant(this);
         agentCode = constant.getAgentCode();
         /*保存设备标识*/
         constant.saveUniqueID();
         uuId = constant.readUUId();
+
+
         boolean first = (boolean) SharePreferenceUtil.getParam(this, "First", true);
         if (first){
             LogUtils.e("第一次开启");
@@ -358,13 +365,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 /*首次加载显示3条*/
                 if (recGameBeans != null && recGameBeans.size() != 0) {
                     rec_txt.setText("推荐游戏");
-                    if (recGameBeans.size() > 3 && hotGameBeans.size() != 0) {
+                    if (recGameBeans.size() > 3 ) {
                         recList.addAll(recGameBeans.subList(0, 3));
                         /*填充recyclerview*/
                         setRecyclerView(rec_recycle, recList, RECTYPE);
                         rec_more.setVisibility(View.VISIBLE);
                     } else {
-                        rec_more.setVisibility(View.GONE);
+//                        rec_more.setVisibility(View.GONE);
                         setRecyclerView(rec_recycle, recGameBeans, RECTYPE);
                     }
                 }
@@ -459,7 +466,19 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 dialogView = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_layout, null);
                 TextView phone_num = dialogView.findViewById(R.id.phone_num);
                 TextView work_time = dialogView.findViewById(R.id.work_time);
-                phone_num.setText("联系客服：" + assistantBean.getKf_number());
+//                phone_num.setText("联系客服：" + assistantBean.getKf_number());
+                ViewTreeObserver vo = phone_num.getViewTreeObserver();
+                vo.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        TextPaint paint = phone_num.getPaint();
+                        paint.setTextSize(phone_num.getTextSize());
+                        int v = (int) paint.measureText("联系客服：" + assistantBean.getKf_number());
+                        if (v> phone_num.getWidth()){
+                            phone_num.setText("联系客服：" +"\n"+ assistantBean.getKf_number());
+                        }
+                    }
+                });
                 work_time.setText("工作时间：" + assistantBean.getKf_time());
                 DialogUtils.getDialog(MainActivity.this, dialogView);
 
@@ -472,16 +491,27 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         rec_more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setRecyclerView(rec_recycle, recGameBeans, RECTYPE);
-//                gameAdapter.notifyDataSetChanged();
-                v.setVisibility(View.GONE);
 
+                if (recGameBeans != null&& recGameBeans.size() >3){
 
+                    List<HomeItem> homeItems = recGameBeans.subList(0, 3);
+                    if (rec_more.getText().equals("收起")) {
+                        setRecyclerView(rec_recycle, homeItems, RECTYPE);
+//                    gameAdapter.notifyDataSetChanged();
+                        rec_more.setText("查看更多");
+                    } else {
+                        setRecyclerView(rec_recycle, recGameBeans, RECTYPE);
+//                    gameAdapter.notifyDataSetChanged();
+                        rec_more.setText("收起");
+                    }
+                }
             }
         });
         hot_more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (hotGameBeans != null && hotGameBeans.size() >3){
+
                 List<HomeItem> homeItems = hotGameBeans.subList(0, 3);
                 if (hot_more.getText().equals("收起")) {
                     setRecyclerView(hot_recycle, homeItems, HOTTYPE);
@@ -492,8 +522,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //                    gameAdapter.notifyDataSetChanged();
                     hot_more.setText("收起");
                 }
-
-
+                }
             }
         });
 

@@ -234,6 +234,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     protected void initData() {
+
         constant = new Constant(mActivity);
         agent_code = constant.getAgentCode();
 //        Tabadd();
@@ -260,14 +261,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         videoView.startVideo();
         LogUtils.e("播放视频");
     }
-
-    public JzvdStd getVideoView(){
-        if (videoView != null){
-            return videoView;
-        }
-        return null;
-    }
-
 
     @Override
     public void onPause() {

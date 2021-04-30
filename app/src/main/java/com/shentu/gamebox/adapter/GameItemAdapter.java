@@ -25,6 +25,7 @@ public class GameItemAdapter extends BaseQuickAdapter<HomeItem, BaseViewHolder> 
 
     private final int type;
 
+
     public GameItemAdapter(int LayoutResId, List<HomeItem> data, int type) {
         super(LayoutResId,data);
         this.type = type;
@@ -69,8 +70,7 @@ public class GameItemAdapter extends BaseQuickAdapter<HomeItem, BaseViewHolder> 
 //        params.bottomMargin =0;
 //        params.topMargin =0;
         int itemPosition = getItemPosition(homeItem);
-        if (!cover.isEmpty() && type == 2 && itemPosition ==0){
-
+        if (!cover.isEmpty() && type == 2 && itemPosition == 0){
             bigImg.setVisibility(View.VISIBLE);
 
             Glide.with(getContext())

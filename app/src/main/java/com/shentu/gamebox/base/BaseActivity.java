@@ -20,11 +20,6 @@ public abstract class BaseActivity  extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(initLayoutId());
         /*崩溃信息搜集*/
-//        CrashHandlerUtil instance = CrashHandlerUtil.getInstance();
-//        instance.init(this);
-//        String crashTip = instance.getCrashTip();
-
-
         CrashHandlerUtils.getInstance().init(this);
         /*设置状态栏*/
         SetStatusBarColor barColor = new SetStatusBarColor(this);
