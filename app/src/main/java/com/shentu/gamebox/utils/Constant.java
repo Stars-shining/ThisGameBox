@@ -98,7 +98,7 @@ public class Constant {
         /*获取内部储存状态*/
         String state = Environment.getExternalStorageState();
         /*如果不是mounted 不可续写*/
-        if (state.equals(Environment.MEDIA_MOUNTED));{
+        if (state.equals(Environment.MEDIA_MOUNTED)){
             String absolutePath = mContext.getExternalFilesDir("CaChe").getAbsolutePath();
             File uidFile = new File(absolutePath,fileName);
             if (!uidFile.exists()){

@@ -258,8 +258,6 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
         JzvdStd.SAVE_PROGRESS = false;
         Glide.with(mActivity).load(cover).into(videoView.posterImageView);
         videoView.startVideo();
-        videoView.showVolumeDialog(0,0);
-        videoView.dismissVolumeDialog();
         LogUtils.e("播放视频");
     }
 
@@ -404,7 +402,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                         image_view.setVisibility(View.VISIBLE);
                         videoView.setVisibility(View.GONE);
                         LogUtils.e(cover);
-                        if (cover.isEmpty() && imgsList.size() != 0) {
+                        if (cover.isEmpty() &&null != imgsList) {
                             Glide.with(mActivity).load(imgsList.get(0)).apply(override).into(image_view);
                         } else {
                             Glide.with(mActivity).load(cover).into(image_view);
@@ -427,8 +425,12 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
                     bundle.putSerializable("detialGameBean", detialGameBean);
                     /*eventbus发送数据*/
                     EventBus.getDefault().postSticky(detialGameBean);
-                    /*初始化地步tab和viewpager+fragment*/
-                    initViewPager(beanImgs, vipBeans.get(0), openClose);
+                    /*初始化tab和viewpager+fragment*/
+                    VipBean vipBean = null;
+                    if (null != vipBeans){
+                        vipBean = vipBeans.get(0);
+                    }
+                    initViewPager(beanImgs, vipBean, openClose);
                 }
             }
         }, map);
@@ -450,7 +452,7 @@ public class GameFragment extends BaseFragment implements View.OnClickListener, 
             tablayout.addTab(tablayout.newTab().setText("游戏截图"));
             fragments.add(imageFragment);
         }
-        if (!vip.getLavel().isEmpty()) {
+        if (null != vip && !vip.getLavel().isEmpty()) {
             strtab.add("VIP价格列表");
             tablayout.addTab(tablayout.newTab().setText("VIP价格列表"));
             fragments.add(priceFragment);

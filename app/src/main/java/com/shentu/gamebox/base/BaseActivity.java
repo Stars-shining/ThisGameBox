@@ -3,12 +3,12 @@ package com.shentu.gamebox.base;
 import android.os.Bundle;
 import android.view.WindowManager;
 
-import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.shentu.gamebox.R;
+import com.shentu.gamebox.utils.CrashHandlerUtils;
 import com.shentu.gamebox.utils.SetStatusBarColor;
 
 public abstract class BaseActivity  extends AppCompatActivity {
@@ -19,6 +19,13 @@ public abstract class BaseActivity  extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(initLayoutId());
+        /*崩溃信息搜集*/
+//        CrashHandlerUtil instance = CrashHandlerUtil.getInstance();
+//        instance.init(this);
+//        String crashTip = instance.getCrashTip();
+
+
+        CrashHandlerUtils.getInstance().init(this);
         /*设置状态栏*/
         SetStatusBarColor barColor = new SetStatusBarColor(this);
         barColor.setStatueBarColor(ContextCompat.getColor(this,R.color.transparent_background));
@@ -50,4 +57,5 @@ public abstract class BaseActivity  extends AppCompatActivity {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
     }
+
 }
